@@ -10,7 +10,7 @@ use Mike42\Escpos\PrintConnectors\CupsPrintConnector;
      * Dados do emitente
      * Campo Obrigatório
      */
-    echo "teste";
+
     function parteI($nfce,$aURI){
         $razao = (string)$nfce->infNFe->emit->xNome;
         $cnpj = (string)$nfce->infNFe->emit->CNPJ;
