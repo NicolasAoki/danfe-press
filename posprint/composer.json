@@ -1,0 +1,47 @@
+{
+    "name": "nfephp-org/posprint",
+    "type": "library",
+    "description": "Thermal POS printer library",
+    "homepage": "https://github.com/nfephp/posprint",
+    "keywords": ["nfce", "print", "escpos", "thermal", "driver"],
+    "license": ["LGPL-3.0-or-later", "GPL-3.0-or-later", "MIT"],
+    "authors": [
+        {
+            "name": "Roberto L. Machado",
+            "email": "linux.rlm@gmail.com",
+            "role": "Developer"
+        }
+    ],
+    "require": {
+        "php" : ">=7.0",
+        "tecnickcom/tc-lib-barcode": "^1.15"
+    },
+    "require-dev": {
+        "squizlabs/php_codesniffer": "^2.8",
+        "phpunit/phpunit": "^6.5",
+        "scrutinizer/ocular": "^1.3",
+        "phpstan/phpstan": "^0.9.1"
+    },
+    "autoload": {
+        "psr-4": {
+            "Posprint\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Posprint\\": "tests"
+        }
+    },
+    "scripts": {
+        "test": "phpunit -c phpunit.xml.dist",
+        "phpcbf": "vendor/bin/phpcbf --standard=psr2 src/",
+        "phpcs": "vendor/bin/phpcs --standard=psr2 src/",
+        "phpstan": "vendor/bin/phpstan analyse src/ --level 7"
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-master": "0.1-dev"
+        }
+    },
+    "minimum-stability": "stable"
+}
