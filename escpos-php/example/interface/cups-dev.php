@@ -39,22 +39,23 @@ function parteI($nfce,$aURI){
  
 function parteIII($nfce,$printer){
 
-    echo("\nItem Cod   Desc         Qtd    V.Unit  V.Total");
+    echo("\nItem Cod     |      Desc      | Qtd |  V.Unit | V.Total");
 
     $det = $nfce->infNFe->det;
     foreach ($det as $key => $value) {
         # code...
-        
-        echo "\n".(float)$value->prod->vUnCom;
-        echo " ".(float)$value->prod->vUnCom;
-        echo " ".(float)$value->prod->vUnCom;
-        echo " ".(float)$value->prod->vUnCom;
-        echo " ".(float)$value->prod->vUnCom;
-        echo " ".(float)$value->prod->vUnCom;
+        echo "\n".(string)$value->prod->cProd;               //codigo do produto
+        echo " ".substr((string)$value->prod->xProd,0,14);   //descricao
+        echo "      ".(float)$value->prod->qCom;                  //quantidade
+        echo "      ".(float)$value->prod->vUnCom;                //valor unitario
+        echo "      ".(float)$value->prod->vProd;                 //
+
+
+        echo "\n";
     }
     /*
     $totItens = $det->count();
-    for ($x=0; $x<=$totItens-1; $x++) {
+    for ($x=0; $x<=$totItens-1; $x++) { 
         $nItem = (int) $det[$x]->attributes()->{'nItem'};
         $cProd = (string) $det[$x]->prod->cProd;
         $xProd = (string) $det[$x]->prod->xProd;
