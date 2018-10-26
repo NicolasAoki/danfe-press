@@ -1,6 +1,6 @@
 <?php
 /* Change to the correct path if you copy this example! */
-require __DIR__ . '/../../autoload.php';
+require __DIR__ . '/../autoload.php';
 use Mike42\Escpos\Printer;
 use Mike42\Escpos\PrintConnectors\CupsPrintConnector;
 
@@ -11,7 +11,7 @@ use Mike42\Escpos\PrintConnectors\CupsPrintConnector;
  * Campo Obrigatório
  */
 
-function parteI($nfce,$aURI){
+function parteI($nfce,$aURI,$printer){
     $razao = (string)$nfce->infNFe->emit->xNome;
     $cnpj = (string)$nfce->infNFe->emit->CNPJ;
     $ie = (string)$nfce->infNFe->emit->IE;
@@ -37,7 +37,7 @@ function parteI($nfce,$aURI){
      * Parte III - Detalhes da Venda
      * Campo Opcional
      */
-function parteIII($nfce){
+function parteIII($nfce,$printer){
     $printer -> setJustification(Printer::JUSTIFY_RIGHT);
     $printer->text('Item Cod   Desc         Qtd    V.Unit  V.Total');
     //obter dados dos itens da NFCe
@@ -55,7 +55,6 @@ function parteIII($nfce){
         //falta formatar os campos e o espaçamento entre eles
         $printer->text($nItem .  $cProd. $xProd . $qCom . $uCom . $vUnCom . $vProd);
     }
-    //linha divisória ??
 }
  /**
  * Parte IX - QRCode
@@ -63,7 +62,7 @@ function parteIII($nfce){
  * Protocolo de autorização 1234567891234567 22/06/2016 14:43:51
  * Campo Obrigatório
  */
-function parteIX($nfce){
+function parteIX($nfce,$printer){
     $printer->text('Consulte via Leitor de QRCode');
     $qr = (string)$nfce->infNFeSupl->qrCode;
     $printer -> qrCode($qr);
@@ -119,12 +118,13 @@ try {
         'SE' => 'http://www.nfce.se.gov.br/portal/portalNoticias.jsp?jsp=barra-menu/servicos/consultaDANFENFCe.htm',
         'SP' => 'https://www.nfce.fazenda.sp.gov.br/NFCeConsultaPublica/Paginas/ConsultaPublica.aspx'
     ];
-    $connector = new CupsPrintConnector("EPSON_TM-T20");
+    $connector = new CupsPrintConnector("bema2");
     $printer = new Printer($connector);
-    $nfce = loadNFCe('../resources/teste_nota.xml');
-    parteI($nfce,$aURI);
+    $nfce = loadNFCe('teste_nota.xml');
+    parteI($nfce,$aURI,$printer);
+    parteIII($nfce,$printer);
     $printer -> text("Testa QR code");
-    parteIX($nfce);
+    parteIX($nfce,$printer);
     /* Start the printer */
     $logo = EscposImage::load("../resources/escpos-php.png", false);
     /* Print top logo */
@@ -146,7 +146,7 @@ try {
     );
     for ($i = 0; $i < count($justification); $i++) {
         $printer -> setJustification($justification[$i]);
-        $printer -> text("A man a plan a canal panama\n");
+        $printer -> text("justificado\n");
     }
     $printer -> setJustification(); // Reset
     $printer -> text("Justification Off");
@@ -166,12 +166,3 @@ try {
 } catch (Exception $e) {
     echo "Couldn't print to this printer: " . $e -> getMessage() . "\n";
 }
-
-
-
-    /* Print a "Hello world" receipt"
-    $printer = new Printer($connector);
-    $printer -> text("Hello World!\n");
-    $printer -> cut();
-    
-        Close printer */
