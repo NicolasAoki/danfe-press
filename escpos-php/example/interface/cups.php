@@ -27,13 +27,13 @@ function parteI($nfce,$aURI,$printer,$align){
     $align['left'];
     $printer->text('CNPJ: '.$cnpj.' ');
     $printer -> setEmphasis(true);
-    $printer->text($razao.'\n');
+    $printer->text($razao."\n");
     $printer -> setEmphasis(false);
     //$printer->text('IE:' . $ie); inscricao estadual
     //$printer->text('IM: '.$im); 
     $printer->text($log . ', ' . $nro . ' ' . $bairro . ' ' . $mun . ' ' . $uf);
     $align['right'];
-    $printer->text('\nDocumento Auxiliar da Nota Fiscal de Consumidor Eletônica \n');
+    $printer->text("\nDocumento Auxiliar da Nota Fiscal de Consumidor Eletônica \n");
     $align['reset'];
 }
 
@@ -41,7 +41,7 @@ function parteI($nfce,$aURI,$printer,$align){
 function parteIII($nfce,$printer,$align){
     $printer -> setEmphasis(true);
     $align['mid'];
-    $printer->text('\nItem Cod   Desc         Qtd    V.Unit  V.Total');
+    $printer->text("\nItem Cod   Desc         Qtd    V.Unit  V.Total");
     $printer -> setEmphasis(false);
     //obter dados dos itens da NFCe
     $align['reset'];
@@ -132,7 +132,7 @@ try {
         'reset' => $printer->setJustification()
     );
     parteI($nfce,$aURI,$printer,$align);
-   // parteIII($nfce,$printer,$align);
+    parteIII($nfce,$printer,$align);
     ///parteIX($nfce,$printer,$align);
     //$printer -> text("Testa QR code");
     /* Start the printer 
