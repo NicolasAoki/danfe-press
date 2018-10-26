@@ -11,7 +11,7 @@ use Mike42\Escpos\PrintConnectors\CupsPrintConnector;
  * Campo Obrigatório
  */
 
-function parteI($nfce,$aURI,$printer){
+function parteI($nfce,$aURI,$printer,$align){
     $razao = (string)$nfce->infNFe->emit->xNome;
     $cnpj = (string)$nfce->infNFe->emit->CNPJ;
     $ie = (string)$nfce->infNFe->emit->IE;
@@ -24,24 +24,27 @@ function parteI($nfce,$aURI,$printer){
     if (array_key_exists($uf,$aURI)) {
         $uri =$aURI[$uf];
     }
-    $printer->text('C');
-    $printer->text($razao);
-    $printer->text('CNPJ: '.$cnpj.'IE:' . $ie);
-    $printer->text('IM: '.$im);
-    $printer->text('L');
+    $align['left'];
+    $printer->text('CNPJ: '.$cnpj.' ');
+    $printer -> setEmphasis(true);
+    $printer->text($razao.'\n');
+    $printer -> setEmphasis(false);
+    //$printer->text('IE:' . $ie); inscricao estadual
+    //$printer->text('IM: '.$im); 
     $printer->text($log . ', ' . $nro . ' ' . $bairro . ' ' . $mun . ' ' . $uf);
-
-    
+    $align['right'];
+    $printer->text('\nDocumento Auxiliar da Nota Fiscal de Consumidor Eletônica \n');
+    $align['reset'];
 }
- /**
-     * Parte III - Detalhes da Venda
-     * Campo Opcional
-     */
-function parteIII($nfce,$printer){
-    $printer -> setJustification(Printer::JUSTIFY_RIGHT);
-    $printer->text('Item Cod   Desc         Qtd    V.Unit  V.Total');
+
+ 
+function parteIII($nfce,$printer,$align){
+    $printer -> setEmphasis(true);
+    $align['mid'];
+    $printer->text('\nItem Cod   Desc         Qtd    V.Unit  V.Total');
+    $printer -> setEmphasis(false);
     //obter dados dos itens da NFCe
-    $printer -> setJustification(); // Reset
+    $align['reset'];
     $det = $nfce->infNFe->det;
     $totItens = $det->count();
     for ($x=0; $x<=$totItens-1; $x++) {
@@ -53,16 +56,16 @@ function parteIII($nfce,$printer){
         $vUnCom = (float) $det[$x]->prod->vUnCom;
         $vProd = (float) $det[$x]->prod->vProd;
         //falta formatar os campos e o espaçamento entre eles
-        $printer->text($nItem .  $cProd. $xProd . $qCom . $uCom . $vUnCom . $vProd);
+        $printer->text("\n".$nItem .  $cProd. $xProd . $qCom . $uCom . $vUnCom . $vProd);
     }
 }
- /**
+ /*
  * Parte IX - QRCode
  * Consulte via Leitor de QRCode
  * Protocolo de autorização 1234567891234567 22/06/2016 14:43:51
  * Campo Obrigatório
- */
-function parteIX($nfce,$printer){
+ 
+function parteIX($nfce,$printer,$align){
     $printer->text('Consulte via Leitor de QRCode');
     $qr = (string)$nfce->infNFeSupl->qrCode;
     $printer -> qrCode($qr);
@@ -74,9 +77,9 @@ function parteIX($nfce,$printer){
     } else {
         $printer->text('NOTA FISCAL INVÁLIDA - SEM PROTOCOLO DE AUTORIZAÇÃO');
     }
-    */
-}
     
+}
+    */
 function loadNFCe($nfcexml){
     $xml = $nfcexml;
     if (is_file($nfcexml)) {
@@ -96,6 +99,7 @@ function loadNFCe($nfcexml){
 }
 
 try {
+   
     $nfce = '';
     $protNFe = '';
     $printer='';
@@ -121,45 +125,24 @@ try {
     $connector = new CupsPrintConnector("bema2");
     $printer = new Printer($connector);
     $nfce = loadNFCe('teste_nota.xml');
-    parteI($nfce,$aURI,$printer);
-    parteIII($nfce,$printer);
-    $printer -> text("Testa QR code");
-    parteIX($nfce,$printer);
-    /* Start the printer */
+    $align = array(
+        'left' => $printer->setJustification(Printer::JUSTIFY_LEFT),
+        'mid' => $printer->setJustification(Printer::JUSTIFY_CENTER),
+        'right' => $printer->setJustification(Printer::JUSTIFY_RIGHT),
+        'reset' => $printer->setJustification()
+    );
+    parteI($nfce,$aURI,$printer,$align);
+   // parteIII($nfce,$printer,$align);
+    ///parteIX($nfce,$printer,$align);
+    //$printer -> text("Testa QR code");
+    /* Start the printer 
     $logo = EscposImage::load("../resources/escpos-php.png", false);
-    /* Print top logo */
+    /* Print top logo 
     $printer -> setJustification(Printer::JUSTIFY_CENTER);
     $printer -> graphics($logo);
     $printer -> setJustification(); // Reset
-    $printer -> text("inicio FEED");
-    $printer -> feed();
-    $printer -> text("fim FEED");
-    $printer -> text("inicio feed reverse");
-    $printer -> feedReverse(3);
-    $printer -> text("fim feed reverse");
-    $printer -> text("Justification ON");
-    /* Justification */
-    $justification = array(
-        Printer::JUSTIFY_LEFT,
-        Printer::JUSTIFY_CENTER,
-        Printer::JUSTIFY_RIGHT
-    );
-    for ($i = 0; $i < count($justification); $i++) {
-        $printer -> setJustification($justification[$i]);
-        $printer -> text("justificado\n");
-    }
-    $printer -> setJustification(); // Reset
-    $printer -> text("Justification Off");
-    $printer -> text("BARCODE on");
-    $printer -> setBarcodeHeight(80);
-    $printer->setBarcodeTextPosition(Printer::BARCODE_TEXT_BELOW);
-    $printer -> barcode("9876");
-    $printer -> text("BARCODE OFF");
-    $printer -> setEmphasis(true);
-    $printer -> text("Left margin\n");
-    $printer -> setEmphasis(false);
-    $printer -> setJustification(Printer::JUSTIFY_RIGHT);
-    $printer -> text("Default width\n");
+    */    
+
     $printer -> cut();
 
     $printer -> close();
