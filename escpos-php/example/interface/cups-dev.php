@@ -43,15 +43,19 @@ function parteIII($nfce,$printer){
 
     $det = $nfce->infNFe->det;
     foreach ($det as $key => $value) {
-        # code...
-        echo "\n".(string)$value->prod->cProd;               //codigo do produto
-        echo " ".substr((string)$value->prod->xProd,0,14);   //descricao
-        echo "      ".(float)$value->prod->qCom;                  //quantidade
-        echo "      ".(float)$value->prod->vUnCom;                //valor unitario
-        echo "      ".(float)$value->prod->vProd;                 //
 
-
-        echo "\n";
+        $cProd = "\n".(string)$value->prod->cProd;               //codigo do produto
+        $xProd = " ".substr((string)$value->prod->xProd,0,14);   //descricao
+        $qCom = " ".(float)$value->prod->qCom;                  //quantidade
+        $vUnCom = " ".(float)$value->prod->vUnCom;                //valor unitario
+        $vProd = " ".(float)$value->prod->vProd;                 //
+        $linha = $cProd. $xProd . $qCom . $vUnCom . $vProd;
+        while(strlen($linha)>42){
+            $linha = $cProd. substr($xProd, 0, -1) . $qCom . $vUnCom . $vProd;
+            $xProd = substr($xProd, 0, -1);
+            //echo strlen($linha);    
+        }
+        echo "\n" . $linha;
     }
     /*
     $totItens = $det->count();

@@ -41,22 +41,21 @@ function parteI($nfce,$aURI,$printer,$align){
 function parteIII($nfce,$printer,$align){
     $printer -> setEmphasis(true);
     $align['mid'];
-    $printer->text("\nItem Cod   Desc         Qtd    V.Unit  V.Total");
+    $printer->text("\nItem Cod  | Desc | Qtd |  V.U nit | V.Total");
     $printer -> setEmphasis(false);
     //obter dados dos itens da NFCe
     $align['reset'];
-    $det = $nfce->infNFe->det;
-    $totItens = $det->count();
-    for ($x=0; $x<=$totItens-1; $x++) {
-        $nItem = (int) $det[$x]->attributes()->{'nItem'};
-        $cProd = (string) $det[$x]->prod->cProd;
-        $xProd = (string) $det[$x]->prod->xProd;
-        $qCom = (float) $det[$x]->prod->qCom;
-        $uCom = (string) $det[$x]->prod->uCom;
-        $vUnCom = (float) $det[$x]->prod->vUnCom;
-        $vProd = (float) $det[$x]->prod->vProd;
-        //falta formatar os campos e o espaçamento entre eles
-        $printer->text("\n".$nItem .  $cProd. $xProd . $qCom . $uCom . $vUnCom . $vProd);
+     $det = $nfce->infNFe->det;
+    foreach ($det as $key => $value) {
+        # code...
+        $cProd = "\n".(string)$value->prod->cProd;               //codigo do produto
+        $xProd = " ".substr((string)$value->prod->xProd,0,14);   //descricao
+        $qCom = "      ".(float)$value->prod->qCom;                  //quantidade
+        $vUnCom = "      ".(float)$value->prod->vUnCom;                //valor unitario
+        $vProd = "      ".(float)$value->prod->vProd;                 //
+        $printer->text("\n". $cProd. $xProd . $qCom . $vUnCom . $vProd);
+    
+
     }
 }
  /*
@@ -96,6 +95,12 @@ function loadNFCe($nfcexml){
         $nfce = $nfe;
     }
     return $nfce;
+}
+function title(Printer $printer, $text)
+{
+    $printer -> selectPrintMode(Printer::MODE_EMPHASIZED);
+    $printer -> text("\n" . $text);
+    $printer -> selectPrintMode(); // Reset
 }
 
 try {
@@ -142,6 +147,14 @@ try {
     $printer -> graphics($logo);
     $printer -> setJustification(); // Reset
     */    
+     /* Text of various (in-proportion) sizes */
+     title($printer, "\nChange height & width\n");
+     for ($i = 1; $i <= 8; $i++) {
+         $printer -> setTextSize($i, $i);
+         $printer -> text($i);
+     }
+     $printer -> text("\n");
+     
 
     $printer -> cut();
 
