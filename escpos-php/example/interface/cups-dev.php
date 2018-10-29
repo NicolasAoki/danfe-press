@@ -36,26 +36,37 @@ function parteI($nfce,$aURI){
 
 }
 
- 
+
 function parteIII($nfce,$printer){
 
     echo("\nItem Cod     |      Desc      | Qtd |  V.Unit | V.Total");
 
     $det = $nfce->infNFe->det;
     foreach ($det as $key => $value) {
-
-        $cProd = "\n".(string)$value->prod->cProd;               //codigo do produto
-        $xProd = " ".substr((string)$value->prod->xProd,0,14);   //descricao
-        $qCom = " ".(float)$value->prod->qCom;                  //quantidade
-        $vUnCom = " ".(float)$value->prod->vUnCom;                //valor unitario
-        $vProd = " ".(float)$value->prod->vProd;                 //
-        $linha = $cProd. $xProd . $qCom . $vUnCom . $vProd;
-        while(strlen($linha)>42){
-            $linha = $cProd. substr($xProd, 0, -1) . $qCom . $vUnCom . $vProd;
-            $xProd = substr($xProd, 0, -1);
-            //echo strlen($linha);    
+        echo ("\n");
+        $cProd = (string)$value->prod->cProd;               //codigo do produto
+        $xProd = substr((string)$value->prod->xProd,0,14);   //descricao
+        $qCom = (float)$value->prod->qCom;                  //quantidade
+        $vUnCom = (float)$value->prod->vUnCom;                //valor unitario
+        $vProd = (float)$value->prod->vProd;   
+        
+        
+        if(strlen($cProd)>=14){
+            $aux = substr($cProd,0,10);
+            echo $aux."\n";
+            $cProd = substr($cProd,10);
         }
-        echo "\n" . $linha;
+       
+        $cProd = str_pad($cProd, 14,' ');
+       
+        $xProd = str_pad($xProd, 16,' ');
+        $qCom = str_pad($qCom, 6,' ',STR_PAD_BOTH);
+        $vUnCom = str_pad($vUnCom, 10,' ',STR_PAD_BOTH);
+        $vProd = str_pad($vProd, 10,' ',STR_PAD_BOTH);
+        $linha = $cProd. $xProd . $qCom . $vUnCom . $vProd;
+        //$linha = substr($linha,0,42);
+        echo $linha;
+        
     }
     /*
     $totItens = $det->count();
@@ -137,6 +148,7 @@ try {
         'SE' => 'http://www.nfce.se.gov.br/portal/portalNoticias.jsp?jsp=barra-menu/servicos/consultaDANFENFCe.htm',
         'SP' => 'https://www.nfce.fazenda.sp.gov.br/NFCeConsultaPublica/Paginas/ConsultaPublica.aspx'
     ];
+
     //$connector = new CupsPrintConnector("bema2");
     //$printer = new Printer($connector);
     $nfce = loadNFCe('../resources/teste_nota.xml');
