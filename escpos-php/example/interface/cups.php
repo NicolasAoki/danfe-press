@@ -3,7 +3,7 @@
 require __DIR__ . '/../autoload.php';
 use Mike42\Escpos\Printer;
 use Mike42\Escpos\PrintConnectors\CupsPrintConnector;
-use Mike42\Escpos\PrintBuffers\EscposPrintBuffer;
+use Mike42\Escpos\EscposImage;
 
     /**
  * Parte I - Emitente
@@ -51,7 +51,9 @@ function parteI($nfce,$aURI,$printer,$align){
     //$printer->text('IM: '.$im); 
     $printer->text($log . ', ' . $nro . ' ' . $bairro . ' ' . $mun . ' ' . $uf);
     $align['right'];
+    $printer -> setEmphasis(true);
     $printer->text("\nDocumento Auxiliar da Nota Fiscal de Consumidor Eletônica \n");
+    $printer -> setEmphasis(false);
     $align['reset'];
 }
 
@@ -60,7 +62,8 @@ function parteIII($nfce,$printer,$align){
     $printer -> setEmphasis(true);
     $align['mid'];
     $printer->text("\n");
-    $printer->text("Item Cod  |  Desc | Qtd | V.Unit | V.Total");
+    $printer -> setFont(Printer::FONT_B);
+    $printer->text("Item Cod  |         Desc         | Qtd | V.Unit | V.Total");
     $printer -> setEmphasis(false);
     //obter dados dos itens da NFCe
     $align['reset'];
@@ -81,7 +84,7 @@ function parteIII($nfce,$printer,$align){
        
         $cProd = str_pad($cProd, 7,' ');
        
-        $xProd = str_pad($xProd, 7,' ');
+        $xProd = str_pad($xProd, 23,' ');
         $qCom = str_pad($qCom, 5,' ',STR_PAD_BOTH);
         $vUnCom = str_pad($vUnCom, 8,' ',STR_PAD_BOTH);
         $vProd = str_pad($vProd, 8,' ',STR_PAD_BOTH);
@@ -90,21 +93,26 @@ function parteIII($nfce,$printer,$align){
         $printer->text("\n");
         $printer->text($cProd. $xProd . $qCom . $vUnCom . $vProd);
     }
+    $printer -> setFont(); // Reset
 }
 function parteIV($nfce,$printer,$align){
     $vTotTrib = (float) $nfce->infNFe->total->ICMSTot->vTotTrib;
+    $printer->text("\n");
     $align['left'];
     $printer->text('Informação dos Tributos Totais:' . '' . 'R$ ' .  $vTotTrib);
     $printer->text('Incidentes (Lei Federal 12.741 /2012) - Fonte IBPT');
     $align['reset'];
 }
 function parteV($nfce,$printer,$align){
+    
     $vNF = (float) $nfce->infNFe->total->ICMSTot->vNF;
     $align['left'];
     $printer->text("\n");
+    $printer -> setFont(Printer::FONT_B);
     $printer->text('VALOR TOTAL            R$ ' . $vNF);
     $printer->text("\n");
     $printer->text('FORMA PAGAMENTO          VALOR PAGO');
+    $printer -> setFont();
     $pag = $nfce->infNFe->pag;
     $tot = $pag->count();
     for ($x=0; $x<=$tot-1; $x++) {
@@ -113,6 +121,7 @@ function parteV($nfce,$printer,$align){
         $printer->text($tPag . '                  R$ '. $vPag);
     }
     $align['reset'];
+   
 }
 
 function parteVII($nfce,$printer,$align,$aURI){
@@ -134,6 +143,7 @@ function parteVII($nfce,$printer,$align,$aURI){
     $printer->text('Nr. ' . $nNF. ' Serie ' .$serie . ' Emissão ' .$dhEmi . ' via Consumidor');
     $align['reset'];
     $printer->text("\n");
+    $printer -> setFont(Printer::FONT_B);
     $printer->text('Consulte pela chave de acesso em: ');
     $uf = (string)$nfce->infNFe->emit->enderEmit->UF;
     if (array_key_exists($uf,$aURI)) {
@@ -144,7 +154,7 @@ function parteVII($nfce,$printer,$align,$aURI){
     $printer->text('CHAVE DE ACESSO');
     $printer->text("\n");
     $printer->text($chave);
-    //linha divisória ??
+    $printer -> setFont();
 }
 function loadNFCe($nfcexml){
     $xml = $nfcexml;
@@ -204,14 +214,20 @@ try {
         'right' => $printer->setJustification(Printer::JUSTIFY_RIGHT),
         'reset' => $printer->setJustification()
     );
+    
     parteI($nfce,$aURI,$printer,$align);
     parteIII($nfce,$printer,$align);
     parteIV($nfce,$printer,$align);
     parteV($nfce,$printer,$align);
     parteVII($nfce,$printer,$align,$aURI);
+    $align['mid'];
+    $tux = EscposImage::load("frame.png", false);
 
-
+    $printer -> bitImage($tux);
+ 
+    $align['reset'];
     $printer -> cut();
+
 
     $printer -> close();
 } catch (Exception $e) {
