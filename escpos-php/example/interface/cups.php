@@ -5,6 +5,7 @@ use Mike42\Escpos\Printer;
 use Mike42\Escpos\PrintConnectors\CupsPrintConnector;
 use Mike42\Escpos\EscposImage;
 
+require_once("phpqrcode/qrlib.php");
     /**
  * Parte I - Emitente
  * Dados do emitente
@@ -63,7 +64,7 @@ function parteIII($nfce,$printer,$align){
     $align['mid'];
     $printer->text("\n");
     $printer -> setFont(Printer::FONT_B);
-    $printer->text("Item Cod  |         Desc         | Qtd | V.Unit | V.Total");
+    $printer->text("Item Cod  |       Descrição     | Qtd | V.Unit | V.Total");
     $printer -> setEmphasis(false);
     //obter dados dos itens da NFCe
     $align['reset'];
@@ -82,15 +83,13 @@ function parteIII($nfce,$printer,$align){
             $cProd = substr($cProd,7);
         }
        
-        $cProd = str_pad($cProd, 7,' ');
+        $cProd = str_pad($cProd, 11,' ');
        
-        $xProd = str_pad($xProd, 23,' ');
-        $qCom = str_pad($qCom, 5,' ',STR_PAD_BOTH);
-        $vUnCom = str_pad($vUnCom, 8,' ',STR_PAD_BOTH);
-        $vProd = str_pad($vProd, 8,' ',STR_PAD_BOTH);
+        $xProd = str_pad($xProd, 21,' ');
+        $qCom = str_pad($qCom, 7,' ',STR_PAD_BOTH);
+        $vUnCom = str_pad($vUnCom, 9,' ',STR_PAD_BOTH);
+        $vProd = str_pad($vProd, 9,' ',STR_PAD_BOTH);
         $linha = $cProd. $xProd . $qCom . $vUnCom . $vProd;
-
-        $printer->text("\n");
         $printer->text($cProd. $xProd . $qCom . $vUnCom . $vProd);
     }
     $printer -> setFont(); // Reset
@@ -99,8 +98,10 @@ function parteIV($nfce,$printer,$align){
     $vTotTrib = (float) $nfce->infNFe->total->ICMSTot->vTotTrib;
     $printer->text("\n");
     $align['left'];
+    $printer -> setEmphasis(true);
     $printer->text('Informação dos Tributos Totais:' . '' . 'R$ ' .  $vTotTrib);
-    $printer->text('Incidentes (Lei Federal 12.741 /2012) - Fonte IBPT');
+    $printer -> setEmphasis(false);
+    $printer->text("\nIncidentes (Lei Federal 12.741 /2012) \n Fonte IBPT");
     $align['reset'];
 }
 function parteV($nfce,$printer,$align){
@@ -109,7 +110,7 @@ function parteV($nfce,$printer,$align){
     $align['left'];
     $printer->text("\n");
     $printer -> setFont(Printer::FONT_B);
-    $printer->text('VALOR TOTAL            R$ ' . $vNF);
+    $printer->text('VALOR TOTAL R$ ' . $vNF);
     $printer->text("\n");
     $printer->text('FORMA PAGAMENTO          VALOR PAGO');
     $printer -> setFont();
@@ -128,7 +129,7 @@ function parteVII($nfce,$printer,$align,$aURI){
     $printer->text("\n");
     $tpAmb = (int) $nfce->infNFe->ide->tpAmb;
     if ($tpAmb == 2) {
-        $printer->text('EMITIDA EM AMBIENTE DE HOMOLOGAÇÃO - SEM VALOR FISCAL ');
+        $printer->text('EMITIDA EM AMBIENTE DE HOMOLOGAÇÃO - SEM  VALOR FISCAL ');
     }
     $tpEmis = (int) $nfce->infNFe->ide->tpEmis;
     if ($tpEmis != 1) {
@@ -140,10 +141,11 @@ function parteVII($nfce,$printer,$align,$aURI){
     $Id = (string) $nfce->infNFe->attributes()->{'Id'};
     $chave = substr($Id, 3, strlen($Id)-3);
     $align['left'];
-    $printer->text('Nr. ' . $nNF. ' Serie ' .$serie . ' Emissão ' .$dhEmi . ' via Consumidor');
+    $printer->text('Nr. ' . $nNF. ' Serie ' .$serie . ' Emissão ' .$dhEmi . ' via  Consumidor');
     $align['reset'];
     $printer->text("\n");
     $printer -> setFont(Printer::FONT_B);
+    $align['mid'];
     $printer->text('Consulte pela chave de acesso em: ');
     $uf = (string)$nfce->infNFe->emit->enderEmit->UF;
     if (array_key_exists($uf,$aURI)) {
@@ -154,6 +156,7 @@ function parteVII($nfce,$printer,$align,$aURI){
     $printer->text('CHAVE DE ACESSO');
     $printer->text("\n");
     $printer->text($chave);
+    $align['mid'];
     $printer -> setFont();
 }
 function loadNFCe($nfcexml){
@@ -181,7 +184,7 @@ function title(Printer $printer, $text)
 }
 
 try {
-   
+    $date = new DateTime();
     $nfce = '';
     $protNFe = '';
     $printer='';
@@ -220,12 +223,26 @@ try {
     parteIV($nfce,$printer,$align);
     parteV($nfce,$printer,$align);
     parteVII($nfce,$printer,$align,$aURI);
-    $align['mid'];
-    $tux = EscposImage::load("frame.png", false);
 
+    //QRCODE
+    $qr = (string)$nfce->infNFeSupl->qrCode;
+    $printer->text($qr);
+    /*
+    
+    $tmpfname = tempnam(sys_get_temp_dir(), "temp");
+    QRcode::png($qr, $tmpfname);
+    $img = EscposImage::load($tmpfname);;
+    $printer->bitImage($img);
+    unlink($tmpfname);
+    //QRCODE
+*/
+    $printer->setJustification(Printer::JUSTIFY_RIGHT);
+    $tux = EscposImage::load("frame.png", false);
+    $printer->setJustification();
     $printer -> bitImage($tux);
- 
+    $printer->text("Emissão : " . date("d-m-Y H:i:s") );
     $align['reset'];
+ 
     $printer -> cut();
 
 
