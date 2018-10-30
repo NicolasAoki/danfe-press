@@ -157,7 +157,7 @@ try {
         'left' => $printer->setJustification(Printer::JUSTIFY_LEFT),
         'mid' => $printer->setJustification(Printer::JUSTIFY_CENTER),
         'right' => $printer->setJustification(Printer::JUSTIFY_RIGHT),
-        'reset' => $printer->setJustification()
+        'reset' => $printer->setJustification() 
     );
     */
     parteI($nfce,$aURI);
@@ -171,10 +171,7 @@ try {
     $printer -> graphics($logo);
     $printer -> setJustification(); // Reset
     */    
-    $qr = (string)$nfce->infNFeSupl->qrCode;
-    echo ($qr);
-    $printer->qrCode();
-    echo "asda"."\t" . "asd";
+
     //$printer -> cut();
 
    // $printer -> close();

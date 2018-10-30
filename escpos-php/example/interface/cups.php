@@ -236,14 +236,13 @@ try {
     unlink($tmpfname);
     //QRCODE
 */
-    $printer->setJustification(Printer::JUSTIFY_CENTER);
-
+    $printer->setJustification(Printer::JUSTIFY_RIGHT);
     $tux = EscposImage::load("frame.png", false);
     $printer->setJustification();
     $printer -> bitImage($tux);
     $printer->text("Emissão : " . date("d-m-Y H:i:s") );
     $align['reset'];
-    $printer->text("\n");
+ 
     $printer -> cut();
 
 
