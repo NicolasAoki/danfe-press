@@ -121,6 +121,7 @@ function loadNFCe($nfcexml){
         //NFe sem protocolo
         $nfce = $nfe;
     }
+    print_r($nfce->infNFeSupl);
     return $nfce;
 }
 
@@ -170,7 +171,10 @@ try {
     $printer -> graphics($logo);
     $printer -> setJustification(); // Reset
     */    
-
+    $qr = (string)$nfce->infNFeSupl->qrCode;
+    echo ($qr);
+    $printer->qrCode();
+    echo "asda"."\t" . "asd";
     //$printer -> cut();
 
    // $printer -> close();
