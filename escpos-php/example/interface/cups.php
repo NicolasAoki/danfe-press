@@ -6,30 +6,58 @@ use Mike42\Escpos\PrintConnectors\CupsPrintConnector;
 use Mike42\Escpos\EscposImage;
 
 require_once("phpqrcode/qrlib.php");
-    /**
- * Parte I - Emitente
- * Dados do emitente
- * Campo Obrigatório
- */
-function tipoPag($tPag)
-    {
-        $aPag = [
-            '01' => 'Dinheiro',
-            '02' => 'Cheque',
-            '03' => 'Cartao de Credito',
-            '04' => 'Cartao de Debito',
-            '05' => 'Credito Loja',
-            '10' => 'Vale Alimentacao',
-            '11' => 'Vale Refeicao',
-            '12' => 'Vale Presente',
-            '13' => 'Vale Combustivel',
-            '99' => 'Outros'
-        ];
-        if (array_key_exists($tPag, $aPag)) {
-            return $aPag[$tPag];
-        }
-        return '';
+$date = new DateTime();
+$nfce = '';
+$protNFe = '';
+$printer='';
+$da = [];
+$totItens = 0;
+$uri = '';
+$aURI = [
+    'AC' => 'http://sefaznet.ac.gov.br/nfce/consulta.xhtml',
+    'AM' => 'http://sistemas.sefaz.am.gov.br/nfceweb/formConsulta.do',
+    'BA' => 'http://nfe.sefaz.ba.gov.br/servicos/nfce/Modulos/Geral/NFCEC_consulta_chave_acesso.aspx',
+    'MT' => 'https://www.sefaz.mt.gov.br/nfce/consultanfce',
+    'MA' => 'http://www.nfce.sefaz.ma.gov.br/portal/consultaNFe.do?method=preFilterCupom&',
+    'PA' => 'https://appnfc.sefa.pa.gov.br/portal/view/consultas/nfce/consultanfce.seam',
+    'PB' => 'https://www.receita.pb.gov.br/ser/servirtual/documentos-fiscais/nfc-e/consultar-nfc-e',
+    'PR' => 'http://www.sped.fazenda.pr.gov.br/modules/conteudo/conteudo.php?conteudo=100',
+    'RJ' => 'http://www4.fazenda.rj.gov.br/consultaDFe/paginas/consultaChaveAcesso.faces',
+    'RS' => 'https://www.sefaz.rs.gov.br/NFE/NFE-COM.aspx',
+    'RO' => 'http://www.nfce.sefin.ro.gov.br/home.jsp',
+    'RR' => 'https://www.sefaz.rr.gov.br/nfce/servlet/wp_consulta_nfce',
+    'SE' => 'http://www.nfce.se.gov.br/portal/portalNoticias.jsp?jsp=barra-menu/servicos/consultaDANFENFCe.htm',
+    'SP' => 'https://www.nfce.fazenda.sp.gov.br/NFCeConsultaPublica/Paginas/ConsultaPublica.aspx'
+];
+$connector = new CupsPrintConnector("bema2");
+$printer = new Printer($connector);
+
+$nfce = loadNFCe('teste_nota.xml');
+$align = array(
+    'left' => $printer->setJustification(Printer::JUSTIFY_LEFT),
+    'mid' => $printer->setJustification(Printer::JUSTIFY_CENTER),
+    'right' => $printer->setJustification(Printer::JUSTIFY_RIGHT),
+    'reset' => $printer->setJustification()
+);
+
+function tipoPag($tPag){
+    $aPag = [
+        '01' => 'Dinheiro',
+        '02' => 'Cheque',
+        '03' => 'Cartao de Credito',
+        '04' => 'Cartao de Debito',
+        '05' => 'Credito Loja',
+        '10' => 'Vale Alimentacao',
+        '11' => 'Vale Refeicao',
+        '12' => 'Vale Presente',
+        '13' => 'Vale Combustivel',
+        '99' => 'Outros'
+    ];
+    if (array_key_exists($tPag, $aPag)) {
+        return $aPag[$tPag];
     }
+    return '';
+}
 function parteI($nfce,$aURI,$printer,$align){
     $razao = (string)$nfce->infNFe->emit->xNome;
     $cnpj = (string)$nfce->infNFe->emit->CNPJ;
@@ -57,8 +85,6 @@ function parteI($nfce,$aURI,$printer,$align){
     $printer -> setEmphasis(false);
     $align['reset'];
 }
-
- 
 function parteIII($nfce,$printer,$align){
     $printer -> setEmphasis(true);
     $align['mid'];
@@ -124,7 +150,6 @@ function parteV($nfce,$printer,$align){
     $align['reset'];
    
 }
-
 function parteVII($nfce,$printer,$align,$aURI){
     $printer->text("\n");
     $tpAmb = (int) $nfce->infNFe->ide->tpAmb;
@@ -176,48 +201,13 @@ function loadNFCe($nfcexml){
     }
     return $nfce;
 }
-function title(Printer $printer, $text)
-{
+function title(Printer $printer, $text){
     $printer -> selectPrintMode(Printer::MODE_EMPHASIZED);
     $printer -> text("\n" . $text);
     $printer -> selectPrintMode(); // Reset
 }
-
 try {
-    $date = new DateTime();
-    $nfce = '';
-    $protNFe = '';
-    $printer='';
-    $da = [];
-    $totItens = 0;
-    $uri = '';
-    $aURI = [
-        'AC' => 'http://sefaznet.ac.gov.br/nfce/consulta.xhtml',
-        'AM' => 'http://sistemas.sefaz.am.gov.br/nfceweb/formConsulta.do',
-        'BA' => 'http://nfe.sefaz.ba.gov.br/servicos/nfce/Modulos/Geral/NFCEC_consulta_chave_acesso.aspx',
-        'MT' => 'https://www.sefaz.mt.gov.br/nfce/consultanfce',
-        'MA' => 'http://www.nfce.sefaz.ma.gov.br/portal/consultaNFe.do?method=preFilterCupom&',
-        'PA' => 'https://appnfc.sefa.pa.gov.br/portal/view/consultas/nfce/consultanfce.seam',
-        'PB' => 'https://www.receita.pb.gov.br/ser/servirtual/documentos-fiscais/nfc-e/consultar-nfc-e',
-        'PR' => 'http://www.sped.fazenda.pr.gov.br/modules/conteudo/conteudo.php?conteudo=100',
-        'RJ' => 'http://www4.fazenda.rj.gov.br/consultaDFe/paginas/consultaChaveAcesso.faces',
-        'RS' => 'https://www.sefaz.rs.gov.br/NFE/NFE-COM.aspx',
-        'RO' => 'http://www.nfce.sefin.ro.gov.br/home.jsp',
-        'RR' => 'https://www.sefaz.rr.gov.br/nfce/servlet/wp_consulta_nfce',
-        'SE' => 'http://www.nfce.se.gov.br/portal/portalNoticias.jsp?jsp=barra-menu/servicos/consultaDANFENFCe.htm',
-        'SP' => 'https://www.nfce.fazenda.sp.gov.br/NFCeConsultaPublica/Paginas/ConsultaPublica.aspx'
-    ];
-    $connector = new CupsPrintConnector("bema2");
-    $printer = new Printer($connector);
-
-    $nfce = loadNFCe('teste_nota.xml');
-    $align = array(
-        'left' => $printer->setJustification(Printer::JUSTIFY_LEFT),
-        'mid' => $printer->setJustification(Printer::JUSTIFY_CENTER),
-        'right' => $printer->setJustification(Printer::JUSTIFY_RIGHT),
-        'reset' => $printer->setJustification()
-    );
-    
+ 
     parteI($nfce,$aURI,$printer,$align);
     parteIII($nfce,$printer,$align);
     parteIV($nfce,$printer,$align);
@@ -235,7 +225,7 @@ try {
     $printer->bitImage($img);
     unlink($tmpfname);
     //QRCODE
-*/
+    */
     $printer->setJustification(Printer::JUSTIFY_RIGHT);
     $tux = EscposImage::load("frame.png", false);
     $printer->setJustification();
