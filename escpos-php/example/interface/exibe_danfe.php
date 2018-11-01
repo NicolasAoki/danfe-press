@@ -598,30 +598,7 @@ $nfce = '';
         ];
         $notas_xml = array();
         
-//foreach(glob('teste_xml/*xml') as $filename){
- 
-  //  array_push($notas_xml, $filename);
-/*
 
-    try {
-        $nfce = loadNFCe($filename);
-        //$nfce = loadNFCe('teste_nota.xml');
-        parteI($nfce,$aURI);
-        parteIII($nfce,$printer);
-        parteIV($nfce,$printer);
-        parteV($nfce,$printer);
-        parteVII($nfce,$printer,$aURI);
-
-    } catch (Exception $e) {
-        echo "Couldn't print to this printer: " . $e -> getMessage() . "\n";
-    }
-   // $danfe = constroiDanfe($docxml, 'P', 'A4', '', 'I', '');
-    //$id = montaDANFE();
-    
-    //$teste = $danfe->printDANFE($id.'.pdf', 'F');
-    
-*/
-//}
 $dirWatch = 'teste_xml';
 
 // Open an inotify instance
@@ -651,19 +628,9 @@ while(true){
         parteVII($nfce,$printer,$aURI);
         echo "\n------------------------------------------------------------------------\n";
     }
-     /*   
-    if ($events[0]['wd'] === $watch_id){
-        $nfce = loadNFCe('teste_nota.xml');
-        parteI($nfce,$aURI);
-        parteIII($nfce,$printer);
-        parteIV($nfce,$printer);
-        parteV($nfce,$printer);
-        parteVII($nfce,$printer,$aURI);
-        echo "\n------------------------------------------------------------------------\n";
-    }
-    // output data
+
    // print_r($events);
-*/
+
 }
 
 // stop watching our directory

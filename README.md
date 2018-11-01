@@ -15,12 +15,15 @@ composer install
 
 
 ## Exemplo de uso
-
-Verifica se algum arquivo xml foi adicionado a pasta 
+Executar processo exibe-danfe
+```sh
+~/danfe-press/escpos-php/example/interface/exibe-danfe.php
+```
+O qual ficará esperando uma alteração na pasta (utilizando inotify)
 ```sh
 ~/danfe-press/escpos-php/example/interface/teste-xml
 ```
-Em seguida envia uma requisição para impressora térmica com a formatação correta dos dados convertidos.
+Caso algum arquivo XML seja copiado para tal diretorio, será enviado uma requisição para impressora térmica com a formatação correta dos dados convertidos. Seguindo o padrão CUPS.
 
 
 ## Meta
