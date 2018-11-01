@@ -18,9 +18,9 @@ function parteI($nfce,$aURI){
         $uri =$aURI[$uf];
     }
 
-   echo ('CNPJ: '.$cnpj.' ');
+    echo ('CNPJ: '.$cnpj.' ');
 
-   echo($razao." \n");
+    echo($razao." \n");
 
     echo ($log . ', ' . $nro . ' ' . $bairro . ' ' . $mun . ' ' . $uf);
     
@@ -144,7 +144,7 @@ function loadNFCe($nfcexml){
         $xml = @file_get_contents($nfcexml);
     }
     if (empty($xml)) {
-        throw new InvalidArgumentException('Não foi possivel ler o documento.');
+        echo('Não foi possivel ler o documento.');
     }
     $nfe = simplexml_load_string($xml, null, LIBXML_NOCDATA);
     $protNFe = $nfe->protNFe;
@@ -639,8 +639,17 @@ while(true){
     // read events (
     // which is non blocking because of our use of stream_set_blocking
     $events = inotify_read($inoInst);
-    if ($events[0]['wd'] === $watch_id){
+
+    //mask '2' evento que verifica se o arquivo esta sendo copiado para pasta
+    if ($events[0]['mask'] === 2){
         echo $events[0]['name'] . "\n";
+        $nfce = loadNFCe("teste_xml/".$events[0]['name']); 
+        parteI($nfce,$aURI);
+        parteIII($nfce,$printer);
+        parteIV($nfce,$printer);
+        parteV($nfce,$printer);
+        parteVII($nfce,$printer,$aURI);
+        echo "\n------------------------------------------------------------------------\n";
     }
      /*   
     if ($events[0]['wd'] === $watch_id){
