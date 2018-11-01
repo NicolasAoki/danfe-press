@@ -57,16 +57,3 @@ $id = $danfe->montaDANFE();
 $teste = $danfe->printDANFE($id.'.pdf', 'F');
 */
 ?> 
-
-<html>
-<body>
-  <div>
-  asdasdasd
-  <!-- 
-    //<object data="11101284613439000180550010000004881093997017-nfe.pdf" type="application/pdf" width="800" height="400">
-    //alt : <a href="11101284613439000180550010000004881093997017-nfe.pdf">test.pdf</a>
-    //</object>
-     -->
-  </div>
-</body>
-</html>
