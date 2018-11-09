@@ -6,6 +6,8 @@ use Mike42\Escpos\PrintConnectors\CupsPrintConnector;
 use Mike42\Escpos\EscposImage;
 
 require_once("phpqrcode/qrlib.php");
+
+//PARAMETROS
 $date = new DateTime();
 $nfce = '';
 $protNFe = '';
@@ -39,7 +41,9 @@ $align = array(
     'right' => $printer->setJustification(Printer::JUSTIFY_RIGHT),
     'reset' => $printer->setJustification()
 );
+//FIM PARAMETROS
 
+//tipo de pagamento utilizado na nota
 function tipoPag($tPag){
     $aPag = [
         '01' => 'Dinheiro',
@@ -58,6 +62,8 @@ function tipoPag($tPag){
     }
     return '';
 }
+
+//cabecalho da nota fiscal, informacoes sobre a empresa emissora
 function parteI($nfce,$aURI,$printer,$align){
     $razao = (string)$nfce->infNFe->emit->xNome;
     $cnpj = (string)$nfce->infNFe->emit->CNPJ;
@@ -85,6 +91,8 @@ function parteI($nfce,$aURI,$printer,$align){
     $printer -> setEmphasis(false);
     $align['reset'];
 }
+
+//especificacoes dos itens da nota fiscal
 function parteIII($nfce,$printer,$align){
     $printer -> setEmphasis(true);
     $align['mid'];
@@ -120,6 +128,7 @@ function parteIII($nfce,$printer,$align){
     }
     $printer -> setFont(); // Reset
 }
+//relação dos tributos emcima dos produtos
 function parteIV($nfce,$printer,$align){
     $vTotTrib = (float) $nfce->infNFe->total->ICMSTot->vTotTrib;
     $printer->text("\n");
@@ -130,6 +139,8 @@ function parteIV($nfce,$printer,$align){
     $printer->text("\nIncidentes (Lei Federal 12.741 /2012) \n Fonte IBPT");
     $align['reset'];
 }
+
+//forma utilizada para acerto da nota fiscal
 function parteV($nfce,$printer,$align){
     
     $vNF = (float) $nfce->infNFe->total->ICMSTot->vNF;
@@ -150,6 +161,7 @@ function parteV($nfce,$printer,$align){
     $align['reset'];
    
 }
+//informações para consulta da nota fiscal no site da receita
 function parteVII($nfce,$printer,$align,$aURI){
     $printer->text("\n");
     $tpAmb = (int) $nfce->infNFe->ide->tpAmb;
@@ -184,6 +196,8 @@ function parteVII($nfce,$printer,$align,$aURI){
     $align['mid'];
     $printer -> setFont();
 }
+
+//Carrega o arquivo XML e o retorna
 function loadNFCe($nfcexml){
     $xml = $nfcexml;
     if (is_file($nfcexml)) {
@@ -201,6 +215,8 @@ function loadNFCe($nfcexml){
     }
     return $nfce;
 }
+
+//Seta string com enfase, deixando-o centralizado e em negrito
 function title(Printer $printer, $text){
     $printer -> selectPrintMode(Printer::MODE_EMPHASIZED);
     $printer -> text("\n" . $text);

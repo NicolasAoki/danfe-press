@@ -572,7 +572,7 @@ function printDANFE($nome = '', $destino = 'I', $printer = ''){
         }
         return $arq;
 
-} //fim função printDANFE
+} 
 
 $nfce = '';
         $protNFe = '';
