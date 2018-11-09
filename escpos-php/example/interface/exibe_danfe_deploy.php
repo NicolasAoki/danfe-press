@@ -24,7 +24,7 @@ function parteI($nfce,$printer,$aURI){
 
     $printer->text($log . ', ' . $nro . ' ' . $bairro . ' ' . $mun . ' ' . $uf);
     
-
+    echo($log . ', ' . $nro . ' ' . $bairro . ' ' . $mun . ' ' . $uf);
     $printer->text("\nDocumento Auxiliar da Nota Fiscal de Consumidor Eletônica \n");
 
 }
@@ -153,6 +153,7 @@ function loadNFCe($nfcexml){
         //NFe sem protocolo
         $nfce = $nfe;
     }
+    echo "PASSA AQUI";
     return $nfce;
 }
 
@@ -205,17 +206,17 @@ while(true){
     if ($events[0]['mask'] === 2){
         $printer->text($events[0]['name'] . "\n");
         $nfce = loadNFCe("teste_xml/".$events[0]['name']); 
-        echo "parte 1 OK \n";
+        
         parteI($nfce,$printer,$aURI);
-        echo "parte 2 OK \n";
+        
         parteIII($nfce,$printer);
-        echo "parte 3 OK \n";
+        
         parteIV($nfce,$printer);
-        echo "parte 4 OK \n";
+        
         parteV($nfce,$printer);
-        echo "parte 5 OK \n";
+        
         parteVII($nfce,$printer,$aURI);
-        echo "parte 6 OK \n";
+        
         $printer->text("\n------------------------------------------------------------------------\n");
     }
 

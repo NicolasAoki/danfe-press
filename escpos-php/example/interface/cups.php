@@ -1,11 +1,10 @@
 <?php
 /* Change to the correct path if you copy this example! */
-require __DIR__ . '/../autoload.php';
+require __DIR__ . '/../../autoload.php';
 use Mike42\Escpos\Printer;
 use Mike42\Escpos\PrintConnectors\CupsPrintConnector;
-use Mike42\Escpos\EscposImage;
+//use Mike42\Escpos\EscposImage;
 
-require_once("phpqrcode/qrlib.php");
 
 //PARAMETROS
 $date = new DateTime();
@@ -34,7 +33,7 @@ $aURI = [
 $connector = new CupsPrintConnector("bema2");
 $printer = new Printer($connector);
 
-$nfce = loadNFCe('teste_nota.xml');
+$nfce = loadNFCe('../resources/teste_nota.xml');
 $align = array(
     'left' => $printer->setJustification(Printer::JUSTIFY_LEFT),
     'mid' => $printer->setJustification(Printer::JUSTIFY_CENTER),
@@ -229,11 +228,11 @@ try {
     parteIV($nfce,$printer,$align);
     parteV($nfce,$printer,$align);
     parteVII($nfce,$printer,$align,$aURI);
-
+/*
     //QRCODE
     $qr = (string)$nfce->infNFeSupl->qrCode;
     $printer->text($qr);
-    /*
+    
     
     $tmpfname = tempnam(sys_get_temp_dir(), "temp");
     QRcode::png($qr, $tmpfname);
@@ -243,9 +242,9 @@ try {
     //QRCODE
     */
     $printer->setJustification(Printer::JUSTIFY_RIGHT);
-    $tux = EscposImage::load("frame.png", false);
+    //$tux = EscposImage::load("frame.png", false);
     $printer->setJustification();
-    $printer -> bitImage($tux);
+    //$printer -> bitImage($tux);
     $printer->text("Emissão : " . date("d-m-Y H:i:s") );
     $align['reset'];
  
