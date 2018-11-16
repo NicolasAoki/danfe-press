@@ -156,7 +156,7 @@ function loadNFCe($nfcexml){
     return $nfce;
 }
 
-
+//PARAMETROS
 $nfce = '';
 $protNFe = '';
 $printer='';
@@ -183,20 +183,19 @@ $notas_xml = array();
 $connector = new CupsPrintConnector("bema2");
 $printer = new Printer($connector);
 
-$dirWatch = 'teste_xml';
+$dirWatch = '../pasta_teste';
 
+$printer->text('pass through dirwatch');
 // Open an inotify instance
-$inoInst = inotify_init();
+//1$inoInst = inotify_init();
 
 // this is needed so inotify_read while operate in non blocking mode
-stream_set_blocking($inoInst, 0);
+//1stream_set_blocking($inoInst, 0);
 
 // watch if a file is created or deleted in our directory to watch
-$watch_id = inotify_add_watch($inoInst, $dirWatch, IN_ALL_EVENTS);
-
+//1$watch_id = inotify_add_watch($inoInst, $dirWatch, IN_ALL_EVENTS);
 // not the best way but sufficient for this example :-)
-while(true){
-    
+/*while(true){
     // read events (
     // which is non blocking because of our use of stream_set_blocking
     $events = inotify_read($inoInst);
@@ -204,10 +203,10 @@ while(true){
     //mask '2' evento que verifica se o arquivo esta sendo copiado para pasta
     if ($events[0]['mask'] === 2){
         $nome_nota = $events[0]['name'];
- 
+        $printer->text('dentro do evento de copia');
         if(substr($nome_nota,0,6) == 'retsai'){
-
-            $nfce = loadNFCe("teste_xml/".$events[0]['name']); 
+            $printer->text('se for retsai');
+            $nfce = loadNFCe("../pasta_teste/".$events[0]['name']); 
             parteI($nfce,$printer,$aURI);
             
             parteIII($nfce,$printer);
@@ -219,18 +218,31 @@ while(true){
             parteVII($nfce,$printer,$aURI);
             
             $printer->cut();
-        
+//            $printer -> close();
         }
 }
 
+$nfce = loadNFCe("../pasta_teste/retsai_123.xml"); 
+            parteI($nfce,$printer,$aURI);
+            
+            parteIII($nfce,$printer);
+            
+            parteIV($nfce,$printer);
+            
+            parteV($nfce,$printer);
+            
+            parteVII($nfce,$printer,$aURI);
+            */
+            $printer->cut();
+            $printer -> close();
    // print_r($events);
 
-}
+//}
 
 // stop watching our directory
-inotify_rm_watch($inoInst, $watch_id);
+//1inotify_rm_watch($inoInst, $watch_id);
 
 // close our inotify instance
-fclose($inoInst);
+//1fclose($inoInst);
 
 ?> 

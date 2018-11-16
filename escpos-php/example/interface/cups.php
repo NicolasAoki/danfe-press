@@ -30,17 +30,8 @@ $aURI = [
     'SE' => 'http://www.nfce.se.gov.br/portal/portalNoticias.jsp?jsp=barra-menu/servicos/consultaDANFENFCe.htm',
     'SP' => 'https://www.nfce.fazenda.sp.gov.br/NFCeConsultaPublica/Paginas/ConsultaPublica.aspx'
 ];
-$connector = new CupsPrintConnector("bema2");
-$printer = new Printer($connector);
 
-$nfce = loadNFCe('../resources/teste_nota.xml');
-$align = array(
-    'left' => $printer->setJustification(Printer::JUSTIFY_LEFT),
-    'mid' => $printer->setJustification(Printer::JUSTIFY_CENTER),
-    'right' => $printer->setJustification(Printer::JUSTIFY_RIGHT),
-    'reset' => $printer->setJustification()
-);
-//FIM PARAMETROS
+
 
 //tipo de pagamento utilizado na nota
 function tipoPag($tPag){
@@ -63,7 +54,7 @@ function tipoPag($tPag){
 }
 
 //cabecalho da nota fiscal, informacoes sobre a empresa emissora
-function parteI($nfce,$aURI,$printer,$align){
+function parteI($nfce,$printer,$aURI,$align){
     $razao = (string)$nfce->infNFe->emit->xNome;
     $cnpj = (string)$nfce->infNFe->emit->CNPJ;
     $ie = (string)$nfce->infNFe->emit->IE;
@@ -161,7 +152,7 @@ function parteV($nfce,$printer,$align){
    
 }
 //informações para consulta da nota fiscal no site da receita
-function parteVII($nfce,$printer,$align,$aURI){
+function parteVII($nfce,$printer,$aURI,$align){
     $printer->text("\n");
     $tpAmb = (int) $nfce->infNFe->ide->tpAmb;
     if ($tpAmb == 2) {
@@ -222,13 +213,75 @@ function title(Printer $printer, $text){
     $printer -> selectPrintMode(); // Reset
 }
 try {
- 
+    $connector = new CupsPrintConnector("bema2");
+    $printer = new Printer($connector);
+    $align = array(
+        'left' => $printer->setJustification(Printer::JUSTIFY_LEFT),
+        'mid' => $printer->setJustification(Printer::JUSTIFY_CENTER),
+        'right' => $printer->setJustification(Printer::JUSTIFY_RIGHT),
+        'reset' => $printer->setJustification()
+    );
+    //FIM PARAMETROS
+    $dirWatch = '../pasta_teste';
+
+    $inoInst = inotify_init();
+
+    stream_set_blocking($inoInst, 0);
+
+    $watch_id = inotify_add_watch($inoInst, $dirWatch, IN_ALL_EVENTS);
+
+
+    while(true){
+        // read events (
+        // which is non blocking because of our use of stream_set_blocking
+        $events = inotify_read($inoInst);
+    
+        //mask '2' evento que verifica se o arquivo esta sendo copiado para pasta
+        if ($events[0]['mask'] === 2){
+            $nome_nota = $events[0]['name'];
+            if(substr($nome_nota,0,6) == 'retsai'){
+                $printer = new Printer($connector);
+                $nfce = loadNFCe("../pasta_teste/".$events[0]['name']); 
+                parteI($nfce,$printer,$aURI,$align);
+                echo "\n PART ONE ! \n";
+                parteIII($nfce,$printer,$align);
+                echo "\n PART 2 ! \n";
+                parteIV($nfce,$printer,$align);
+                echo "\n PART 3 ! \n";
+                parteV($nfce,$printer,$align);
+                echo "\n PART 4 ! \n";
+                parteVII($nfce,$printer,$aURI,$align);
+                echo "\n PART 5 ! \n";
+                $printer->setJustification(Printer::JUSTIFY_RIGHT);
+                //$tux = EscposImage::load("frame.png", false);
+                $printer->setJustification();
+                //$printer -> bitImage($tux);
+                $printer->text("Emissão : " . date("d-m-Y H:i:s") );
+                $align['reset'];
+                //QRCODE
+                $qr = (string)$nfce->infNFeSupl->qrCode;
+                if(!empty($qr)){
+                    //$printer->text($qr);
+                    $tmpfname = tempnam(sys_get_temp_dir(), "temp");
+                    QRcode::png($qr, $tmpfname);
+                    $img = EscposImage::load($tmpfname);;
+                    $printer->bitImage($img);
+                    unlink($tmpfname);    
+                }
+                //QRCODE
+                $printer->cut();
+                $printer -> close();
+            }
+        }
+    }
+
+    /*
     parteI($nfce,$aURI,$printer,$align);
     parteIII($nfce,$printer,$align);
     parteIV($nfce,$printer,$align);
     parteV($nfce,$printer,$align);
     parteVII($nfce,$printer,$align,$aURI);
-/*
+
     //QRCODE
     $qr = (string)$nfce->infNFeSupl->qrCode;
     $printer->text($qr);
@@ -241,17 +294,14 @@ try {
     unlink($tmpfname);
     //QRCODE
     */
-    $printer->setJustification(Printer::JUSTIFY_RIGHT);
-    //$tux = EscposImage::load("frame.png", false);
-    $printer->setJustification();
-    //$printer -> bitImage($tux);
-    $printer->text("Emissão : " . date("d-m-Y H:i:s") );
-    $align['reset'];
- 
-    $printer -> cut();
 
 
     $printer -> close();
+    //stop watching our directory
+    inotify_rm_watch($inoInst, $watch_id);
+
+    //close our inotify instance
+    fclose($inoInst);
 } catch (Exception $e) {
     echo "Couldn't print to this printer: " . $e -> getMessage() . "\n";
 }

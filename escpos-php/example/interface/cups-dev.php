@@ -154,7 +154,7 @@ function loadNFCe($nfcexml){
         //NFe sem protocolo
         $nfce = $nfe;
     }
-    print_r($nfce->infNFeSupl);
+    print_r($nfce->infNFeSupl->qrCode);
     return $nfce;
 }
 
@@ -181,12 +181,23 @@ try {
         'SE' => 'http://www.nfce.se.gov.br/portal/portalNoticias.jsp?jsp=barra-menu/servicos/consultaDANFENFCe.htm',
         'SP' => 'https://www.nfce.fazenda.sp.gov.br/NFCeConsultaPublica/Paginas/ConsultaPublica.aspx'
     ];
-    $nfce = loadNFCe('teste_nota.xml');
+    $nfce = loadNFCe('retsai_consagra.xml');
     parteI($nfce,$aURI);
     parteIII($nfce,$printer);
     parteIV($nfce,$printer);
     parteV($nfce,$printer);
     parteVII($nfce,$printer,$aURI);
+    //QRCODE
+    $qr = (string)$nfce->infNFeSupl->qrCode;
+    if(!empty($qr)){
+        //$printer->text($qr);
+        $tmpfname = tempnam(sys_get_temp_dir(), "temp");
+        QRcode::png($qr, $tmpfname);
+        $img = EscposImage::load($tmpfname);;
+        $printer->bitImage($img);
+        unlink($tmpfname);    
+    }
+    //QRCODE
 } catch (Exception $e) {
     echo "Couldn't print to this printer: " . $e -> getMessage() . "\n";
 }
