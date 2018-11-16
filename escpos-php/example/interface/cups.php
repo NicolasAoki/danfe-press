@@ -168,12 +168,12 @@ function parteVII($nfce,$printer,$aURI,$align){
     $Id = (string) $nfce->infNFe->attributes()->{'Id'};
     $chave = substr($Id, 3, strlen($Id)-3);
     $align['left'];
-    $printer->text('Nr. ' . $nNF. ' Serie ' .$serie . ' Emissão ' .$dhEmi . ' via  Consumidor');
+    $printer->text('Nr. ' . $nNF. ' Serie ' .$serie . ' Emissão ' .$dhEmi . '\n              via  Consumidor');
     $align['reset'];
     $printer->text("\n");
     $printer -> setFont(Printer::FONT_B);
     $align['mid'];
-    $printer->text('Consulte pela chave de acesso em: ');
+    $printer->text('Consulte pela chave de acesso em: \n');
     $uf = (string)$nfce->infNFe->emit->enderEmit->UF;
     if (array_key_exists($uf,$aURI)) {
         $uri =$aURI[$uf];
@@ -186,7 +186,36 @@ function parteVII($nfce,$printer,$aURI,$align){
     $align['mid'];
     $printer -> setFont();
 }
-
+function parteVIII($nfce,$printer){
+    $printer -> setFont(Printer::FONT_B);
+    $dest = $nfce->infNFe->dest;
+    if (empty($dest)) {
+        $printer->text('CONSUMIDOR NÃO IDENTIFICADO');
+    }
+    $xNome = (string) $nfce->infNFe->dest->xNome;
+    $printer->text($xNome);
+    $cnpj = (string) $nfce->infNFe->dest->CNPJ;
+    $cpf = (string) $nfce->infNFe->dest->CPF;
+    $idEstrangeiro = (string) $nfce->infNFe->dest->idEstrangeiro;
+    if (!empty($cnpj)) {
+        $printer->text('CNPJ ' . $cnpj);
+    }
+    if (!empty($cpf)) {
+        $printer->text('CPF ' . $cpf);
+    }
+    if (!empty($idEstrangeiro)) {
+        $printer->text('Extrangeiro ' . $idEstrangeiro);
+    }
+    $xLgr = (string) $nfce->infNFe->dest->enderDest->xLgr;
+    $nro = (string) $nfce->infNFe->dest->enderDest->nro;
+    $xCpl = (string) $nfce->infNFe->dest->enderDest->xCpl;
+    $xBairro = (string) $nfce->infNFe->dest->enderDest->xBairro;
+    $xMun = (string) $nfce->infNFe->dest->enderDest->xMun;
+    $uf = (string) $nfce->infNFe->dest->enderDest->UF;
+    $cep = (string) $nfce->infNFe->dest->enderDest->CEP;
+    $printer->text($xLgr . '' . $nro . '' . $xCpl . '' . $xBairro . '' . $xMun . '' . $uf);
+    //linha divisória ??
+}
 //Carrega o arquivo XML e o retorna
 function loadNFCe($nfcexml){
     $xml = $nfcexml;
@@ -222,8 +251,8 @@ try {
         'reset' => $printer->setJustification()
     );
     //FIM PARAMETROS
-    $dirWatch = '../pasta_teste';
-
+    $dirWatch = '../../../../../../../../../sircplus/dados/csag/nfce/f0100/ret';
+    //$dirWatch = '../pasta_teste';
     $inoInst = inotify_init();
 
     stream_set_blocking($inoInst, 0);
@@ -252,6 +281,7 @@ try {
                 echo "\n PART 4 ! \n";
                 parteVII($nfce,$printer,$aURI,$align);
                 echo "\n PART 5 ! \n";
+                parteVIII($nfce,$printer);
                 $printer->setJustification(Printer::JUSTIFY_RIGHT);
                 //$tux = EscposImage::load("frame.png", false);
                 $printer->setJustification();

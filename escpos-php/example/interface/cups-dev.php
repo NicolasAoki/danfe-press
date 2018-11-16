@@ -121,6 +121,37 @@ function parteVII($nfce,$printer,$aURI){
     echo($chave);
 
 }
+function parteVIII($nfce,$printer){
+    
+    $dest = $this->nfce->infNFe->dest;
+    if (empty($dest)) {
+        echo('CONSUMIDOR NÃO IDENTIFICADO');
+    }
+    $xNome = (string) $this->nfce->infNFe->dest->xNome;
+    echo($xNome);
+    $cnpj = (string) $this->nfce->infNFe->dest->CNPJ;
+    $cpf = (string) $this->nfce->infNFe->dest->CPF;
+    $idEstrangeiro = (string) $this->nfce->infNFe->dest->idEstrangeiro;
+    
+    if (!empty($cnpj)) {
+        echo('CNPJ ' . $cnpj);
+    }
+    if (!empty($cpf)) {
+        echo('CPF ' . $cpf);
+    }
+    if (!empty($idEstrangeiro)) {
+        echo('Extrangeiro ' . $idEstrangeiro);
+    }
+    $xLgr = (string) $this->nfce->infNFe->dest->enderDest->xLgr;
+    $nro = (string) $this->nfce->infNFe->dest->enderDest->nro;
+    $xCpl = (string) $this->nfce->infNFe->dest->enderDest->xCpl;
+    $xBairro = (string) $this->nfce->infNFe->dest->enderDest->xBairro;
+    $xMun = (string) $this->nfce->infNFe->dest->enderDest->xMun;
+    $uf = (string) $this->nfce->infNFe->dest->enderDest->UF;
+    $cep = (string) $this->nfce->infNFe->dest->enderDest->CEP;
+    echo($xLgr . '' . $nro . '' . $xCpl . '' . $xBairro . '' . $xMun . '' . $uf);
+    //linha divisória ??
+}
 function tipoPag($tPag){
     $aPag = [
         '01' => 'Dinheiro',
@@ -187,6 +218,7 @@ try {
     parteIV($nfce,$printer);
     parteV($nfce,$printer);
     parteVII($nfce,$printer,$aURI);
+    parteVIII($nfce,$printer);
     //QRCODE
     $qr = (string)$nfce->infNFeSupl->qrCode;
     if(!empty($qr)){
