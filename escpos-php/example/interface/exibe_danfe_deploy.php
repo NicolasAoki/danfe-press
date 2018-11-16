@@ -153,7 +153,6 @@ function loadNFCe($nfcexml){
         //NFe sem protocolo
         $nfce = $nfe;
     }
-    echo "PASSA AQUI";
     return $nfce;
 }
 
@@ -204,21 +203,25 @@ while(true){
 
     //mask '2' evento que verifica se o arquivo esta sendo copiado para pasta
     if ($events[0]['mask'] === 2){
-        $printer->text($events[0]['name'] . "\n");
-        $nfce = loadNFCe("teste_xml/".$events[0]['name']); 
+        $nome_nota = $events[0]['name'];
+ 
+        if(substr($nome_nota,0,6) == 'retsai'){
+
+            $nfce = loadNFCe("teste_xml/".$events[0]['name']); 
+            parteI($nfce,$printer,$aURI);
+            
+            parteIII($nfce,$printer);
+            
+            parteIV($nfce,$printer);
+            
+            parteV($nfce,$printer);
+            
+            parteVII($nfce,$printer,$aURI);
+            
+            $printer->cut();
         
-        parteI($nfce,$printer,$aURI);
-        
-        parteIII($nfce,$printer);
-        
-        parteIV($nfce,$printer);
-        
-        parteV($nfce,$printer);
-        
-        parteVII($nfce,$printer,$aURI);
-        
-        $printer->text("\n------------------------------------------------------------------------\n");
-    }
+        }
+}
 
    // print_r($events);
 
