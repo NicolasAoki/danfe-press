@@ -626,6 +626,7 @@ while(true){
         parteIV($nfce,$printer);
         parteV($nfce,$printer);
         parteVII($nfce,$printer,$aURI);
+        
         echo "\n------------------------------------------------------------------------\n";
     }
 

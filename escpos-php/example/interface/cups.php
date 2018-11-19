@@ -3,8 +3,8 @@
 require __DIR__ . '/../../autoload.php';
 use Mike42\Escpos\Printer;
 use Mike42\Escpos\PrintConnectors\CupsPrintConnector;
-//use Mike42\Escpos\EscposImage;
-
+use Mike42\Escpos\EscposImage;
+require_once("phpqrcode/qrlib.php");
 
 //PARAMETROS
 $date = new DateTime();
@@ -168,7 +168,9 @@ function parteVII($nfce,$printer,$aURI,$align){
     $Id = (string) $nfce->infNFe->attributes()->{'Id'};
     $chave = substr($Id, 3, strlen($Id)-3);
     $align['left'];
-    $printer->text('Nr. ' . $nNF. ' Serie ' .$serie . ' Emissão ' .$dhEmi . '\n              via  Consumidor');
+    $printer->text('Nr. ' . $nNF. ' Serie ' .$serie . ' Emissão ' .$dhEmi);
+    $printer -> setEmphasis(true);
+    $printer->text(str_pad("Via Consumidor", 57, '-', STR_PAD_BOTH));
     $align['reset'];
     $printer->text("\n");
     $printer -> setFont(Printer::FONT_B);
@@ -187,6 +189,8 @@ function parteVII($nfce,$printer,$aURI,$align){
     $printer -> setFont();
 }
 function parteVIII($nfce,$printer){
+    
+    $printer -> text("\n");
     $printer -> setFont(Printer::FONT_B);
     $dest = $nfce->infNFe->dest;
     if (empty($dest)) {
@@ -194,6 +198,7 @@ function parteVIII($nfce,$printer){
     }
     $xNome = (string) $nfce->infNFe->dest->xNome;
     $printer->text($xNome);
+    $printer -> text("\n");
     $cnpj = (string) $nfce->infNFe->dest->CNPJ;
     $cpf = (string) $nfce->infNFe->dest->CPF;
     $idEstrangeiro = (string) $nfce->infNFe->dest->idEstrangeiro;
@@ -215,6 +220,7 @@ function parteVIII($nfce,$printer){
     $cep = (string) $nfce->infNFe->dest->enderDest->CEP;
     $printer->text($xLgr . '' . $nro . '' . $xCpl . '' . $xBairro . '' . $xMun . '' . $uf);
     //linha divisória ??
+    $printer -> text("\n");
 }
 //Carrega o arquivo XML e o retorna
 function loadNFCe($nfcexml){
@@ -251,8 +257,8 @@ try {
         'reset' => $printer->setJustification()
     );
     //FIM PARAMETROS
-    $dirWatch = '../../../../../../../../../sircplus/dados/csag/nfce/f0100/ret';
-    //$dirWatch = '../pasta_teste';
+    //$dirWatch = '../../../../../../../../../sircplus/dados/csag/nfce/f0100/ret';
+    $dirWatch = '../pasta_teste';
     $inoInst = inotify_init();
 
     stream_set_blocking($inoInst, 0);
@@ -290,8 +296,8 @@ try {
                 $align['reset'];
                 //QRCODE
                 $qr = (string)$nfce->infNFeSupl->qrCode;
+                echo("\nQRCODE: \n".$qr);
                 if(!empty($qr)){
-                    //$printer->text($qr);
                     $tmpfname = tempnam(sys_get_temp_dir(), "temp");
                     QRcode::png($qr, $tmpfname);
                     $img = EscposImage::load($tmpfname);;

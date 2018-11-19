@@ -3,7 +3,8 @@
 require __DIR__ . '/../../autoload.php';
 use Mike42\Escpos\Printer;
 use Mike42\Escpos\PrintConnectors\CupsPrintConnector;
-
+use Mike42\Escpos\EscposImage;
+require_once("phpqrcode/qrlib.php");
 
 function parteI($nfce,$aURI){
     $razao = (string)$nfce->infNFe->emit->xNome;
@@ -123,15 +124,15 @@ function parteVII($nfce,$printer,$aURI){
 }
 function parteVIII($nfce,$printer){
     
-    $dest = $this->nfce->infNFe->dest;
+    $dest = $nfce->infNFe->dest;
     if (empty($dest)) {
         echo('CONSUMIDOR NÃO IDENTIFICADO');
     }
-    $xNome = (string) $this->nfce->infNFe->dest->xNome;
+    $xNome = (string) $nfce->infNFe->dest->xNome;
     echo($xNome);
-    $cnpj = (string) $this->nfce->infNFe->dest->CNPJ;
-    $cpf = (string) $this->nfce->infNFe->dest->CPF;
-    $idEstrangeiro = (string) $this->nfce->infNFe->dest->idEstrangeiro;
+    $cnpj = (string) $nfce->infNFe->dest->CNPJ;
+    $cpf = (string) $nfce->infNFe->dest->CPF;
+    $idEstrangeiro = (string) $nfce->infNFe->dest->idEstrangeiro;
     
     if (!empty($cnpj)) {
         echo('CNPJ ' . $cnpj);
@@ -142,13 +143,13 @@ function parteVIII($nfce,$printer){
     if (!empty($idEstrangeiro)) {
         echo('Extrangeiro ' . $idEstrangeiro);
     }
-    $xLgr = (string) $this->nfce->infNFe->dest->enderDest->xLgr;
-    $nro = (string) $this->nfce->infNFe->dest->enderDest->nro;
-    $xCpl = (string) $this->nfce->infNFe->dest->enderDest->xCpl;
-    $xBairro = (string) $this->nfce->infNFe->dest->enderDest->xBairro;
-    $xMun = (string) $this->nfce->infNFe->dest->enderDest->xMun;
-    $uf = (string) $this->nfce->infNFe->dest->enderDest->UF;
-    $cep = (string) $this->nfce->infNFe->dest->enderDest->CEP;
+    $xLgr = (string) $nfce->infNFe->dest->enderDest->xLgr;
+    $nro = (string) $nfce->infNFe->dest->enderDest->nro;
+    $xCpl = (string) $nfce->infNFe->dest->enderDest->xCpl;
+    $xBairro = (string) $nfce->infNFe->dest->enderDest->xBairro;
+    $xMun = (string) $nfce->infNFe->dest->enderDest->xMun;
+    $uf = (string) $nfce->infNFe->dest->enderDest->UF;
+    $cep = (string) $nfce->infNFe->dest->enderDest->CEP;
     echo($xLgr . '' . $nro . '' . $xCpl . '' . $xBairro . '' . $xMun . '' . $uf);
     //linha divisória ??
 }
@@ -226,7 +227,7 @@ try {
         $tmpfname = tempnam(sys_get_temp_dir(), "temp");
         QRcode::png($qr, $tmpfname);
         $img = EscposImage::load($tmpfname);;
-        $printer->bitImage($img);
+        //$printer->bitImage($img);
         unlink($tmpfname);    
     }
     //QRCODE

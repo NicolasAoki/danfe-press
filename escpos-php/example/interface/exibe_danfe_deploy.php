@@ -3,6 +3,8 @@
 require __DIR__ . '/../../autoload.php';
 use Mike42\Escpos\Printer;
 use Mike42\Escpos\PrintConnectors\CupsPrintConnector;
+use Mike42\Escpos\EscposImage;
+require_once("phpqrcode/qrlib.php");
 
 function parteI($nfce,$printer,$aURI){
     $razao = (string)$nfce->infNFe->emit->xNome;
@@ -185,7 +187,6 @@ $printer = new Printer($connector);
 
 $dirWatch = '../pasta_teste';
 
-$printer->text('pass through dirwatch');
 // Open an inotify instance
 //1$inoInst = inotify_init();
 
@@ -195,7 +196,7 @@ $printer->text('pass through dirwatch');
 // watch if a file is created or deleted in our directory to watch
 //1$watch_id = inotify_add_watch($inoInst, $dirWatch, IN_ALL_EVENTS);
 // not the best way but sufficient for this example :-)
-/*while(true){
+while(true){
     // read events (
     // which is non blocking because of our use of stream_set_blocking
     $events = inotify_read($inoInst);
@@ -216,12 +217,19 @@ $printer->text('pass through dirwatch');
             parteV($nfce,$printer);
             
             parteVII($nfce,$printer,$aURI);
-            
+            $qr = (string)$nfce->infNFeSupl->qrCode;
+            if(!empty($qr)){
+                $tmpfname = tempnam(sys_get_temp_dir(), "temp");
+                QRcode::png($qr, $tmpfname);
+                $img = EscposImage::load($tmpfname);;
+                $printer->bitImage($img);
+                unlink($tmpfname);    
+            }
             $printer->cut();
 //            $printer -> close();
         }
 }
-
+/*
 $nfce = loadNFCe("../pasta_teste/retsai_123.xml"); 
             parteI($nfce,$printer,$aURI);
             
@@ -232,7 +240,7 @@ $nfce = loadNFCe("../pasta_teste/retsai_123.xml");
             parteV($nfce,$printer);
             
             parteVII($nfce,$printer,$aURI);
-            */
+            
             $printer->cut();
             $printer -> close();
    // print_r($events);
