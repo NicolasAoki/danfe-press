@@ -79,6 +79,7 @@ function parteI($nfce,$printer,$aURI,$align){
     $printer -> setEmphasis(true);
     $printer->text("\nDocumento Auxiliar da Nota Fiscal de Consumidor Eletônica \n");
     $printer -> setEmphasis(false);
+    $printer->text("\n------------------------------\n");
     $align['reset'];
 }
 
@@ -128,6 +129,7 @@ function parteIV($nfce,$printer,$align){
     $printer -> setEmphasis(false);
     $printer->text("\nIncidentes (Lei Federal 12.741 /2012) \n Fonte IBPT");
     $align['reset'];
+    $printer->text("\n------------------------------\n");
 }
 
 //forma utilizada para acerto da nota fiscal
@@ -149,14 +151,14 @@ function parteV($nfce,$printer,$align){
         $printer->text($tPag . '                  R$ '. $vPag);
     }
     $align['reset'];
-   
+    $printer->text("\n------------------------------\n");
 }
 //informações para consulta da nota fiscal no site da receita
 function parteVII($nfce,$printer,$aURI,$align){
     $printer->text("\n");
     $tpAmb = (int) $nfce->infNFe->ide->tpAmb;
     if ($tpAmb == 2) {
-        $printer->text('EMITIDA EM AMBIENTE DE HOMOLOGAÇÃO - SEM  VALOR FISCAL ');
+        $printer->text('EMITIDA EM AMBIENTE DE HOMOLOGAÇÃO-SEM VALOR FISCAL');
     }
     $tpEmis = (int) $nfce->infNFe->ide->tpEmis;
     if ($tpEmis != 1) {
@@ -170,23 +172,26 @@ function parteVII($nfce,$printer,$aURI,$align){
     $align['left'];
     $printer->text('Nr. ' . $nNF. ' Serie ' .$serie . ' Emissão ' .$dhEmi);
     $printer -> setEmphasis(true);
-    $printer->text(str_pad("Via Consumidor", 57, '-', STR_PAD_BOTH));
+    $printer->text("\n");
+    $printer->text(divisoria("Via Consumidor"));
     $align['reset'];
     $printer->text("\n");
     $printer -> setFont(Printer::FONT_B);
     $align['mid'];
-    $printer->text('Consulte pela chave de acesso em: \n');
+    $printer->text("Consulte pela chave de acesso em: \n");
     $uf = (string)$nfce->infNFe->emit->enderEmit->UF;
     if (array_key_exists($uf,$aURI)) {
         $uri =$aURI[$uf];
     }
     $printer->text($uri);
     $printer->text("\n");
-    $printer->text('CHAVE DE ACESSO');
+    $printer->text('                 CHAVE DE ACESSO');
     $printer->text("\n");
     $printer->text($chave);
     $align['mid'];
     $printer -> setFont();
+    $printer -> setEmphasis(false);
+    $printer->text("\n------------------------------\n");
 }
 function parteVIII($nfce,$printer){
     
@@ -220,8 +225,13 @@ function parteVIII($nfce,$printer){
     $cep = (string) $nfce->infNFe->dest->enderDest->CEP;
     $printer->text($xLgr . '' . $nro . '' . $xCpl . '' . $xBairro . '' . $xMun . '' . $uf);
     //linha divisória ??
-    $printer -> text("\n");
 }
+
+function divisoria($titulo){
+    $titulo = str_pad($titulo, 42, '-', STR_PAD_BOTH);
+    return $titulo;
+}
+
 //Carrega o arquivo XML e o retorna
 function loadNFCe($nfcexml){
     $xml = $nfcexml;
@@ -302,6 +312,7 @@ try {
                     QRcode::png($qr, $tmpfname);
                     $img = EscposImage::load($tmpfname);;
                     $printer->bitImage($img);
+                    $printer->text("QR CODE side by side");
                     unlink($tmpfname);    
                 }
                 //QRCODE
