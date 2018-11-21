@@ -52,7 +52,6 @@ function tipoPag($tPag){
     }
     return '';
 }
-
 //cabecalho da nota fiscal, informacoes sobre a empresa emissora
 function parteI($nfce,$printer,$aURI,$align){
     $razao = (string)$nfce->infNFe->emit->xNome;
@@ -68,6 +67,7 @@ function parteI($nfce,$printer,$aURI,$align){
         $uri =$aURI[$uf];
     }
     $align['left'];
+    $printer ->setJustification(Printer::JUSTIFY_CENTER);
     $printer->text('CNPJ: '.$cnpj.' ');
     $printer -> setEmphasis(true);
     $printer->text($razao."\n");
@@ -82,7 +82,6 @@ function parteI($nfce,$printer,$aURI,$align){
     $printer->text("\n------------------------------\n");
     $align['reset'];
 }
-
 //especificacoes dos itens da nota fiscal
 function parteIII($nfce,$printer,$align){
     $printer -> setEmphasis(true);
@@ -129,9 +128,7 @@ function parteIV($nfce,$printer,$align){
     $printer -> setEmphasis(false);
     $printer->text("\nIncidentes (Lei Federal 12.741 /2012) \n Fonte IBPT");
     $align['reset'];
-    $printer->text("\n------------------------------\n");
 }
-
 //forma utilizada para acerto da nota fiscal
 function parteV($nfce,$printer,$align){
     
@@ -185,9 +182,11 @@ function parteVII($nfce,$printer,$aURI,$align){
     }
     $printer->text($uri);
     $printer->text("\n");
-    $printer->text('                 CHAVE DE ACESSO');
+    $printer ->setJustification(Printer::JUSTIFY_CENTER);
+    $printer->text('CHAVE DE ACESSO');
     $printer->text("\n");
     $printer->text($chave);
+    $printer ->setJustification();
     $align['mid'];
     $printer -> setFont();
     $printer -> setEmphasis(false);
@@ -226,12 +225,10 @@ function parteVIII($nfce,$printer){
     $printer->text($xLgr . '' . $nro . '' . $xCpl . '' . $xBairro . '' . $xMun . '' . $uf);
     //linha divisória ??
 }
-
 function divisoria($titulo){
     $titulo = str_pad($titulo, 42, '-', STR_PAD_BOTH);
     return $titulo;
 }
-
 //Carrega o arquivo XML e o retorna
 function loadNFCe($nfcexml){
     $xml = $nfcexml;
@@ -250,7 +247,6 @@ function loadNFCe($nfcexml){
     }
     return $nfce;
 }
-
 //Seta string com enfase, deixando-o centralizado e em negrito
 function title(Printer $printer, $text){
     $printer -> selectPrintMode(Printer::MODE_EMPHASIZED);
@@ -285,7 +281,18 @@ try {
         if ($events[0]['mask'] === 2){
             $nome_nota = $events[0]['name'];
             if(substr($nome_nota,0,6) == 'retsai'){
-                $printer = new Printer($connector);
+                    $printer = new Printer($connector);
+                    $printer -> initialize();
+                    /* Justification */
+                    $justification = array(
+                        Printer::JUSTIFY_LEFT,
+                        Printer::JUSTIFY_CENTER,
+                        Printer::JUSTIFY_RIGHT);
+                    for ($i = 0; $i < count($justification); $i++) {
+                        $printer -> setJustification($justification[$i]);
+                        $printer -> text("CONSAGRA\n");
+                    }
+                    $printer -> setJustification(); // Reset
                 $nfce = loadNFCe("../pasta_teste/".$events[0]['name']); 
                 parteI($nfce,$printer,$aURI,$align);
                 echo "\n PART ONE ! \n";
@@ -302,7 +309,7 @@ try {
                 //$tux = EscposImage::load("frame.png", false);
                 $printer->setJustification();
                 //$printer -> bitImage($tux);
-                $printer->text("Emissão : " . date("d-m-Y H:i:s") );
+                $printer->text(" Emissão : " . date("d-m-Y H:i:s") );
                 $align['reset'];
                 //QRCODE
                 $qr = (string)$nfce->infNFeSupl->qrCode;
