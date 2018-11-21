@@ -281,18 +281,8 @@ try {
         if ($events[0]['mask'] === 2){
             $nome_nota = $events[0]['name'];
             if(substr($nome_nota,0,6) == 'retsai'){
-                    $printer = new Printer($connector);
-                    $printer -> initialize();
-                    /* Justification */
-                    $justification = array(
-                        Printer::JUSTIFY_LEFT,
-                        Printer::JUSTIFY_CENTER,
-                        Printer::JUSTIFY_RIGHT);
-                    for ($i = 0; $i < count($justification); $i++) {
-                        $printer -> setJustification($justification[$i]);
-                        $printer -> text("CONSAGRA\n");
-                    }
-                    $printer -> setJustification(); // Reset
+                $printer = new Printer($connector);
+                $printer -> initialize();
                 $nfce = loadNFCe("../pasta_teste/".$events[0]['name']); 
                 parteI($nfce,$printer,$aURI,$align);
                 echo "\n PART ONE ! \n";
@@ -305,12 +295,7 @@ try {
                 parteVII($nfce,$printer,$aURI,$align);
                 echo "\n PART 5 ! \n";
                 parteVIII($nfce,$printer);
-                $printer->setJustification(Printer::JUSTIFY_RIGHT);
-                //$tux = EscposImage::load("frame.png", false);
-                $printer->setJustification();
-                //$printer -> bitImage($tux);
-                $printer->text(" Emissão : " . date("d-m-Y H:i:s") );
-                $align['reset'];
+                                
                 //QRCODE
                 $qr = (string)$nfce->infNFeSupl->qrCode;
                 echo("\nQRCODE: \n".$qr);
@@ -319,36 +304,15 @@ try {
                     QRcode::png($qr, $tmpfname);
                     $img = EscposImage::load($tmpfname);;
                     $printer->bitImage($img);
-                    $printer->text("QR CODE side by side");
                     unlink($tmpfname);    
                 }
+                $printer->text(" Emissão : " . date("d-m-Y H:i:s") );
                 //QRCODE
                 $printer->cut();
-                $printer -> close();
+                $printer->close();
             }
         }
     }
-
-    /*
-    parteI($nfce,$aURI,$printer,$align);
-    parteIII($nfce,$printer,$align);
-    parteIV($nfce,$printer,$align);
-    parteV($nfce,$printer,$align);
-    parteVII($nfce,$printer,$align,$aURI);
-
-    //QRCODE
-    $qr = (string)$nfce->infNFeSupl->qrCode;
-    $printer->text($qr);
-    
-    
-    $tmpfname = tempnam(sys_get_temp_dir(), "temp");
-    QRcode::png($qr, $tmpfname);
-    $img = EscposImage::load($tmpfname);;
-    $printer->bitImage($img);
-    unlink($tmpfname);
-    //QRCODE
-    */
-
 
     $printer -> close();
     //stop watching our directory
