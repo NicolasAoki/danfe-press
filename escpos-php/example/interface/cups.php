@@ -53,7 +53,7 @@ function tipoPag($tPag){
     return '';
 }
 //cabecalho da nota fiscal, informacoes sobre a empresa emissora
-function parteI($nfce,$printer,$aURI,$align){
+function parteI($nfce,$printer,$aURI){
     $razao = (string)$nfce->infNFe->emit->xNome;
     $cnpj = (string)$nfce->infNFe->emit->CNPJ;
     $ie = (string)$nfce->infNFe->emit->IE;
@@ -66,7 +66,6 @@ function parteI($nfce,$printer,$aURI,$align){
     if (array_key_exists($uf,$aURI)) {
         $uri =$aURI[$uf];
     }
-    $align['left'];
     $printer ->setJustification(Printer::JUSTIFY_CENTER);
     $printer->text('CNPJ: '.$cnpj.' ');
     $printer -> setEmphasis(true);
@@ -75,23 +74,19 @@ function parteI($nfce,$printer,$aURI,$align){
     //$printer->text('IE:' . $ie); inscricao estadual
     //$printer->text('IM: '.$im); 
     $printer->text($log . ', ' . $nro . ' ' . $bairro . ' ' . $mun . ' ' . $uf);
-    $align['right'];
     $printer -> setEmphasis(true);
     $printer->text("\nDocumento Auxiliar da Nota Fiscal de Consumidor Eletônica \n");
     $printer -> setEmphasis(false);
     $printer->text(divisoria("DANFE NFC-e"));
-    $align['reset'];
 }
 //especificacoes dos itens da nota fiscal
-function parteIII($nfce,$printer,$align){
+function parteIII($nfce,$printer){
     $printer -> setEmphasis(true);
-    $align['mid'];
     $printer->text("\n");
     $printer -> setFont(Printer::FONT_B);
     $printer->text("Item Cod  |       Descrição     | Qtd | V.Unit | V.Total");
     $printer -> setEmphasis(false);
     //obter dados dos itens da NFCe
-    $align['reset'];
      $det = $nfce->infNFe->det;
     foreach ($det as $key => $value) {
         $printer->text("\n");
@@ -119,21 +114,18 @@ function parteIII($nfce,$printer,$align){
     $printer -> setFont(); // Reset
 }
 //relação dos tributos emcima dos produtos
-function parteIV($nfce,$printer,$align){
+function parteIV($nfce,$printer){
     $vTotTrib = (float) $nfce->infNFe->total->ICMSTot->vTotTrib;
     $printer->text("\n");
-    $align['left'];
     $printer -> setEmphasis(true);
     $printer->text('Informação dos Tributos Totais:' . '' . 'R$ ' .  $vTotTrib);
     $printer -> setEmphasis(false);
     $printer->text("\nIncidentes (Lei Federal 12.741 /2012) \n Fonte IBPT");
-    $align['reset'];
 }
 //forma utilizada para acerto da nota fiscal
-function parteV($nfce,$printer,$align){
+function parteV($nfce,$printer){
     
     $vNF = (float) $nfce->infNFe->total->ICMSTot->vNF;
-    $align['left'];
     $printer->text("\n");
     $printer -> setFont(Printer::FONT_B);
     $printer->text('VALOR TOTAL R$ ' . $vNF);
@@ -155,7 +147,7 @@ function parteV($nfce,$printer,$align){
     $printer->text("\n------------------------------\n");
 }
 //informações para consulta da nota fiscal no site da receita
-function parteVII($nfce,$printer,$aURI,$align){
+function parteVII($nfce,$printer,$aURI){
     $printer->text("\n");
     $tpAmb = (int) $nfce->infNFe->ide->tpAmb;
     if ($tpAmb == 2) {
@@ -172,15 +164,15 @@ function parteVII($nfce,$printer,$aURI,$align){
     $dhEmi = (string) $nfce->infNFe->ide->dhEmi;
     $Id = (string) $nfce->infNFe->attributes()->{'Id'};
     $chave = substr($Id, 3, strlen($Id)-3);
-    $align['left'];
+
     $printer->text('Nr. ' . $nNF. ' Serie ' .$serie . ' Emissão ' .$dhEmi);
     $printer -> setEmphasis(true);
     $printer->text("\n");
     $printer->text(divisoria("Via Consumidor"));
-    $align['reset'];
+
     $printer->text("\n");
     $printer -> setFont(Printer::FONT_B);
-    $align['mid'];
+
     $printer->text("Consulte pela chave de acesso em: \n");
     $uf = (string)$nfce->infNFe->emit->enderEmit->UF;
     if (array_key_exists($uf,$aURI)) {
@@ -193,7 +185,7 @@ function parteVII($nfce,$printer,$aURI,$align){
     $printer->text("\n");
     $printer->text($chave);
     $printer ->setJustification();
-    $align['mid'];
+
     $printer -> setFont();
     $printer -> setEmphasis(false);
     $printer->text("\n");
@@ -262,12 +254,6 @@ function title(Printer $printer, $text){
 try {
     $connector = new CupsPrintConnector("bema2");
     $printer = new Printer($connector);
-    $align = array(
-        'left' => $printer->setJustification(Printer::JUSTIFY_LEFT),
-        'mid' => $printer->setJustification(Printer::JUSTIFY_CENTER),
-        'right' => $printer->setJustification(Printer::JUSTIFY_RIGHT),
-        'reset' => $printer->setJustification()
-    );
     //FIM PARAMETROS
     //$dirWatch = '../../../../../../../../../sircplus/dados/csag/nfce/f0100/ret';
     $dirWatch = '../pasta_teste';
@@ -290,15 +276,15 @@ try {
                 $printer = new Printer($connector);
                 $printer -> initialize();
                 $nfce = loadNFCe("../pasta_teste/".$events[0]['name']); 
-                parteI($nfce,$printer,$aURI,$align);
+                parteI($nfce,$printer,$aURI);
                 echo "\n PART 1 ! \n";
-                parteIII($nfce,$printer,$align);
+                parteIII($nfce,$printer);
                 echo "\n PART 2 ! \n";
-                parteIV($nfce,$printer,$align);
+                parteIV($nfce,$printer);
                 echo "\n PART 3 ! \n";
-                parteV($nfce,$printer,$align);
+                parteV($nfce,$printer);
                 echo "\n PART 4 ! \n";
-                parteVII($nfce,$printer,$aURI,$align);
+                parteVII($nfce,$printer,$aURI);
                 echo "\n PART 5 ! \n";
                 parteVIII($nfce,$printer);
 
