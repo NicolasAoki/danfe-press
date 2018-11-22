@@ -74,8 +74,8 @@ function parteI($nfce,$printer,$aURI){
     $printer->text($log . ', ' . $nro . ' ' . $bairro . ' ' . $mun . ' ' . $uf);
     $printer -> setEmphasis(true);
     $printer->text("\nDocumento Auxiliar da Nota Fiscal de Consumidor Eletônica \n");
-    $printer -> setEmphasis(false);
     $printer->text(divisoria("DANFE NFC-e"));
+    $printer -> setEmphasis(false);
 }
 //especificacoes dos itens da nota fiscal
 function parteIII($nfce,$printer){
@@ -129,12 +129,9 @@ function parteV($nfce,$printer){
     $printer->text('VALOR TOTAL R$ ' . $vNF);
     $printer->text("\n");
     $printer ->setJustification(Printer::JUSTIFY_LEFT);
-    $printer->text('FORMA PAGAMENTO');
-    $printer ->setJustification(Printer::JUSTIFY_RIGHT);
-    $printer->text('VALOR PAGO');
+    $printer->text('FORMA PAGAMENTO            VALOR PAGO');
     $printer -> setFont();
     $pag = $nfce->infNFe->pag->detPag;
-    //$tot = $pag->count();
     foreach ($pag as $key) {
         //echo tipoPag((string)$key->tPag);
         $forma_pagamento = tipoPag((string)$key->tPag);
@@ -142,10 +139,13 @@ function parteV($nfce,$printer){
         $printer->text("\n" . str_pad($forma_pagamento,17,' ',STR_PAD_RIGHT) . "- > " . $key->vPag);
     }
     $printer ->setJustification();
-    $printer->text("\n------------------------------\n");
 }
 //informações para consulta da nota fiscal no site da receita
 function parteVII($nfce,$printer,$aURI){
+    $printer->text("\n");
+    $printer -> setEmphasis(true);
+    $printer->text(divisoria("INFO RECEITA"));
+    $printer -> setEmphasis(false);
     $printer->text("\n");
     $tpAmb = (int) $nfce->infNFe->ide->tpAmb;
     if ($tpAmb == 2) {
@@ -166,11 +166,11 @@ function parteVII($nfce,$printer,$aURI){
     $printer->text('Nr. ' . $nNF. ' Serie ' .$serie . ' Emissão ' .$dhEmi);
     $printer -> setEmphasis(true);
     $printer->text("\n");
-    $printer->text(divisoria("Via Consumidor"));
+    $printer->text(divisoria("VIA CONSUMIDOR"));
 
     $printer->text("\n");
     $printer -> setFont(Printer::FONT_B);
-
+    $printer ->setJustification(Printer::JUSTIFY_CENTER);
     $printer->text("Consulte pela chave de acesso em: \n");
     $uf = (string)$nfce->infNFe->emit->enderEmit->UF;
     if (array_key_exists($uf,$aURI)) {
@@ -197,6 +197,9 @@ function parteVIII($nfce,$printer){
         $printer->text('CONSUMIDOR NÃO IDENTIFICADO');
     }
     $xNome = (string) $nfce->infNFe->dest->xNome;
+    if(strlen($xNome)>=44){
+        $xNome = substr($xNome,0,28) . "\n" . substr($xNome,29);
+    }
     $printer->text($xNome);
     $printer -> text("\n");
     $cnpj = (string) $nfce->infNFe->dest->CNPJ;
@@ -249,6 +252,7 @@ function title(Printer $printer, $text){
     $printer -> text("\n" . $text);
     $printer -> selectPrintMode(); // Reset
 }
+
 try {
     $connector = new CupsPrintConnector("bema2");
     $printer = new Printer($connector);
@@ -261,7 +265,6 @@ try {
 
     $watch_id = inotify_add_watch($inoInst, $dirWatch, IN_ALL_EVENTS);
 
-
     while(true){
         // read events (
         // which is non blocking because of our use of stream_set_blocking
@@ -271,6 +274,12 @@ try {
         if ($events[0]['mask'] === 2){
             $nome_nota = $events[0]['name'];
             if(substr($nome_nota,0,6) == 'retsai'){
+                //banner consagra
+                $printer ->setJustification(Printer::JUSTIFY_CENTER);
+                $img = EscposImage::load("banner.png");
+                $printer->bitImage($img);
+                $printer ->setJustification();
+                //banner
                 $printer = new Printer($connector);
                 $printer -> initialize();
                 $nfce = loadNFCe("../pasta_teste/".$events[0]['name']); 
@@ -306,7 +315,6 @@ try {
             }
         }
     }
-
     $printer -> close();
     //stop watching our directory
     inotify_rm_watch($inoInst, $watch_id);
