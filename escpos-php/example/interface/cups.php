@@ -79,7 +79,7 @@ function parteI($nfce,$printer,$aURI,$align){
     $printer -> setEmphasis(true);
     $printer->text("\nDocumento Auxiliar da Nota Fiscal de Consumidor Eletônica \n");
     $printer -> setEmphasis(false);
-    $printer->text("\n------------------------------\n");
+    $printer->text(divisoria("DANFE NFC-e"));
     $align['reset'];
 }
 //especificacoes dos itens da nota fiscal
@@ -138,16 +138,20 @@ function parteV($nfce,$printer,$align){
     $printer -> setFont(Printer::FONT_B);
     $printer->text('VALOR TOTAL R$ ' . $vNF);
     $printer->text("\n");
-    $printer->text('FORMA PAGAMENTO          VALOR PAGO');
+    $printer ->setJustification(Printer::JUSTIFY_LEFT);
+    $printer->text('FORMA PAGAMENTO');
+    $printer ->setJustification(Printer::JUSTIFY_RIGHT);
+    $printer->text('VALOR PAGO');
     $printer -> setFont();
-    $pag = $nfce->infNFe->pag;
-    $tot = $pag->count();
-    for ($x=0; $x<=$tot-1; $x++) {
-        $tPag = tipoPag($pag[0]->tPag);
-        $vPag = (float) $pag[0]->vPag;
-        $printer->text($tPag . '                  R$ '. $vPag);
+    $pag = $nfce->infNFe->pag->detPag;
+    //$tot = $pag->count();
+    foreach ($pag as $key) {
+        //echo tipoPag((string)$key->tPag);
+        $forma_pagamento = tipoPag((string)$key->tPag);
+        $printer ->setJustification(Printer::JUSTIFY_CENTER);
+        $printer->text("\n" . $forma_pagamento . "- > " . $key->vPag);
     }
-    $align['reset'];
+    $printer ->setJustification();
     $printer->text("\n------------------------------\n");
 }
 //informações para consulta da nota fiscal no site da receita
@@ -155,7 +159,9 @@ function parteVII($nfce,$printer,$aURI,$align){
     $printer->text("\n");
     $tpAmb = (int) $nfce->infNFe->ide->tpAmb;
     if ($tpAmb == 2) {
-        $printer->text('EMITIDA EM AMBIENTE DE HOMOLOGAÇÃO-SEM VALOR FISCAL');
+        $printer ->setJustification(Printer::JUSTIFY_RIGHT);
+        $printer->text("EMITIDA EM AMBIENTE DE HOMOLOGAÇÃO-\nSEM VALOR FISCAL");
+        $printer ->setJustification();
     }
     $tpEmis = (int) $nfce->infNFe->ide->tpEmis;
     if ($tpEmis != 1) {
@@ -190,7 +196,7 @@ function parteVII($nfce,$printer,$aURI,$align){
     $align['mid'];
     $printer -> setFont();
     $printer -> setEmphasis(false);
-    $printer->text("\n------------------------------\n");
+    $printer->text("\n");
 }
 function parteVIII($nfce,$printer){
     
@@ -285,7 +291,7 @@ try {
                 $printer -> initialize();
                 $nfce = loadNFCe("../pasta_teste/".$events[0]['name']); 
                 parteI($nfce,$printer,$aURI,$align);
-                echo "\n PART ONE ! \n";
+                echo "\n PART 1 ! \n";
                 parteIII($nfce,$printer,$align);
                 echo "\n PART 2 ! \n";
                 parteIV($nfce,$printer,$align);
@@ -295,7 +301,7 @@ try {
                 parteVII($nfce,$printer,$aURI,$align);
                 echo "\n PART 5 ! \n";
                 parteVIII($nfce,$printer);
-                                
+
                 //QRCODE
                 $qr = (string)$nfce->infNFeSupl->qrCode;
                 echo("\nQRCODE: \n".$qr);
@@ -306,8 +312,11 @@ try {
                     $printer->bitImage($img);
                     unlink($tmpfname);    
                 }
-                $printer->text(" Emissão : " . date("d-m-Y H:i:s") );
                 //QRCODE
+                $printer ->setJustification(Printer::JUSTIFY_LEFT);
+                $printer->text("\n Emissão : " . date("d-m-Y H:i:s") );
+                $printer ->setJustification(Printer::JUSTIFY_CENTER);
+     
                 $printer->cut();
                 $printer->close();
             }

@@ -75,21 +75,25 @@ function parteV($nfce,$printer){
    echo("\n");
    echo('VALOR TOTAL R$ ' . $vNF);
    echo("\n");
-   /*
+   
    echo('FORMA PAGAMENTO          VALOR PAGO');
-    $pag = $nfce->infNFe->pag;
-    $tot = $pag->count();
-    
+    $pag = $nfce->infNFe->pag->detPag;
+    //$tot = $pag->count();
+    foreach ($pag as $key) {
+        //echo tipoPag((string)$key->tPag);
+        $forma_pagamento = tipoPag((string)$key->tPag);
+        echo "\n" . $forma_pagamento . "- > " . $key->vPag;
+    }/*
     foreach($pag as $key){
-        echo $key->vPag;
+        echo "\n".$key->vPag;
     }
-    /*
+    
     for ($x=0; $x<=$tot-1; $x++) {
         $tPag = (int)tipoPag($pag[0]->tPag);
         $vPag = (int) $pag[0]->vPag;
-       echo($tPag . '                  R$ '. $vPag);
-    }
-    */
+       echo("\n".$tPag . '                  R$ '. $vPag);
+    }*/
+    
    
 }
 function parteVII($nfce,$printer,$aURI){
