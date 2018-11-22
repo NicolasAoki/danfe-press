@@ -139,7 +139,7 @@ function parteV($nfce,$printer){
         //echo tipoPag((string)$key->tPag);
         $forma_pagamento = tipoPag((string)$key->tPag);
         $printer ->setJustification(Printer::JUSTIFY_CENTER);
-        $printer->text("\n" . str_pad($forma_pagamento,17,STR_PAD_BOTH) . "- > " . $key->vPag);
+        $printer->text("\n" . str_pad($forma_pagamento,17,' ',STR_PAD_RIGHT) . "- > " . $key->vPag);
     }
     $printer ->setJustification();
     $printer->text("\n------------------------------\n");

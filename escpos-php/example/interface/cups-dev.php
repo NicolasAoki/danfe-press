@@ -75,26 +75,17 @@ function parteV($nfce,$printer){
    echo("\n");
    echo('VALOR TOTAL R$ ' . $vNF);
    echo("\n");
-   
-   echo('FORMA PAGAMENTO          VALOR PAGO');
+   echo('FORMA PAGAMENTO');
+
+   echo('VALOR PAGO');
     $pag = $nfce->infNFe->pag->detPag;
     //$tot = $pag->count();
     foreach ($pag as $key) {
         //echo tipoPag((string)$key->tPag);
-        $forma_pagamento = tipoPag((string)$key->tPag);
-        echo "\n" . $forma_pagamento . "- > " . $key->vPag;
-    }/*
-    foreach($pag as $key){
-        echo "\n".$key->vPag;
+    $forma_pagamento = tipoPag((string)$key->tPag);
+    echo("\n" . str_pad($forma_pagamento,17,' ',STR_PAD_RIGHT) . "- > " . $key->vPag);
     }
-    
-    for ($x=0; $x<=$tot-1; $x++) {
-        $tPag = (int)tipoPag($pag[0]->tPag);
-        $vPag = (int) $pag[0]->vPag;
-       echo("\n".$tPag . '                  R$ '. $vPag);
-    }*/
-    
-   
+   echo("\n------------------------------\n");
 }
 function parteVII($nfce,$printer,$aURI){
     echo("\n");
