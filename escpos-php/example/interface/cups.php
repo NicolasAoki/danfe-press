@@ -125,25 +125,24 @@ function parteV($nfce,$printer){
     
     $vNF = (float) $nfce->infNFe->total->ICMSTot->vNF;
     $printer->text("\n");
+    $printer -> setFont(Printer::FONT_B);
     $printer->text('VALOR TOTAL R$ ' . $vNF);
     $printer->text("\n");
-    $printer->text('FORMA PAGAMENTO             VALOR PAGO');
-
+    $printer ->setJustification(Printer::JUSTIFY_LEFT);
+    $printer->text('FORMA PAGAMENTO');
+    $printer ->setJustification(Printer::JUSTIFY_RIGHT);
+    $printer->text('VALOR PAGO');
+    $printer -> setFont();
     $pag = $nfce->infNFe->pag->detPag;
     //$tot = $pag->count();
     foreach ($pag as $key) {
         //echo tipoPag((string)$key->tPag);
         $forma_pagamento = tipoPag((string)$key->tPag);
-        $printer->text("\n");
-        $forma_pagamento = $forma_pagamento . "!" . $key->vPag;
-        //verifica quantos caracteres foram ocupados naquela linha
-        $tamanho = 42 - strlen($forma_pagamento);
-        //Substitui '!' por ' ' sendo o num de espaços o restante que cabe na linha
-        $forma_pagamento = str_replace($forma_pagamento,'!',str_repeat(' ',$tamanho));
-        $printer->text($forma_pagamento);
+        $printer ->setJustification(Printer::JUSTIFY_CENTER);
+        $printer->text("\n" . str_pad($forma_pagamento,17,STR_PAD_BOTH) . "- > " . $key->vPag);
     }
     $printer ->setJustification();
-    $printer->text(divisoria("Consulta da nota"));
+    $printer->text("\n------------------------------\n");
 }
 //informações para consulta da nota fiscal no site da receita
 function parteVII($nfce,$printer,$aURI){
