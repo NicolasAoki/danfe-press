@@ -32,7 +32,7 @@ function parteI($nfce,$aURI){
 }
 function parteIII($nfce,$printer){
 
-    echo("\nItem Cod     |      Desc      | Qtd |  V.Unit | V.Total");
+    echo("\nItem Cod     |Descrição        |  Qtd|  V.Unit | V.Total");
 
     $det = $nfce->infNFe->det;
     foreach ($det as $key => $value) {
@@ -40,8 +40,8 @@ function parteIII($nfce,$printer){
         $cProd = (string)$value->prod->cProd;               //codigo do produto
         $xProd = substr((string)$value->prod->xProd,0,14);   //descricao
         $qCom = (float)$value->prod->qCom;                  //quantidade
-        $vUnCom = (float)$value->prod->vUnCom;                //valor unitario
-        $vProd = (float)$value->prod->vProd;   
+        $vUnCom = number_format((float)$value->prod->vUnCom, 2);                //valor unitario
+        $vProd = $value->prod->vProd;   
         
         if(strlen($cProd)>=14){
             $aux = substr($cProd,0,10);
@@ -51,10 +51,10 @@ function parteIII($nfce,$printer){
        
         $cProd = str_pad($cProd, 14,' ');
        
-        $xProd = str_pad($xProd, 16,' ');
-        $qCom = str_pad($qCom, 6,' ',STR_PAD_BOTH);
-        $vUnCom = str_pad($vUnCom, 10,' ',STR_PAD_BOTH);
-        $vProd = str_pad($vProd, 10,' ',STR_PAD_BOTH);
+        $xProd = str_pad($xProd, 17,' ');
+        $qCom = str_pad($qCom, 5,' ',STR_PAD_LEFT);
+        $vUnCom = str_pad($vUnCom, 11,' ',STR_PAD_LEFT);
+        $vProd = str_pad($vProd, 9,' ',STR_PAD_LEFT);
         $linha = $cProd. $xProd . $qCom . $vUnCom . $vProd;
         //$linha = substr($linha,0,42);
         echo $linha;
@@ -72,18 +72,18 @@ function parteIV($nfce,$printer){
 function parteV($nfce,$printer){
     
     $vNF = (float) $nfce->infNFe->total->ICMSTot->vNF;
-   echo("\n");
-   echo('VALOR TOTAL R$ ' . $vNF);
-   echo("\n");
-   echo('FORMA PAGAMENTO');
+    echo("\n");
+    echo('VALOR TOTAL R$ ' . $vNF);
+    echo("\n");
+    echo('FORMA PAGAMENTO');
 
-   echo('VALOR PAGO');
+    echo('VALOR PAGO');
     $pag = $nfce->infNFe->pag->detPag;
     //$tot = $pag->count();
     foreach ($pag as $key) {
         //echo tipoPag((string)$key->tPag);
     $forma_pagamento = tipoPag((string)$key->tPag);
-    echo("\n" . str_pad($forma_pagamento,17,' ',STR_PAD_RIGHT) . "- > " . $key->vPag);
+    echo("\n" . str_pad($forma_pagamento,17,' ',STR_PAD_LEFT) . "- > " . $key->vPag);
     }
    echo("\n------------------------------\n");
 }
@@ -148,6 +148,11 @@ function parteVIII($nfce,$printer){
     echo($xLgr . '' . $nro . '' . $xCpl . '' . $xBairro . '' . $xMun . '' . $uf);
     //linha divisória ??
 }
+function parteIX($nfce,$printer){
+    $infAdic = $nfce->infNFe->infAdic;
+    echo str_replace("#","\n",$nfce->infNFe->infAdic->infCpl);
+    
+}
 function tipoPag($tPag){
     $aPag = [
         '01' => 'Dinheiro',
@@ -211,10 +216,10 @@ try {
     $nfce = loadNFCe('retsai_consagra.xml');
     parteI($nfce,$aURI);
     parteIII($nfce,$printer);
-    parteIV($nfce,$printer);
     parteV($nfce,$printer);
     parteVII($nfce,$printer,$aURI);
     parteVIII($nfce,$printer);
+    parteIX($nfce,$printer);
     //QRCODE
     $qr = (string)$nfce->infNFeSupl->qrCode;
     if(!empty($qr)){

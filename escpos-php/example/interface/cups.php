@@ -82,17 +82,18 @@ function parteIII($nfce,$printer){
     $printer -> setEmphasis(true);
     $printer->text("\n");
     $printer -> setFont(Printer::FONT_B);
-    $printer->text("Item Cod  |       Descrição     | Qtd | V.Unit | V.Total");
+    $printer->text("\nItem Cod     |Descrição       |  Qtd|  V.Unit | V.Total");
     $printer -> setEmphasis(false);
     //obter dados dos itens da NFCe
      $det = $nfce->infNFe->det;
     foreach ($det as $key => $value) {
         $printer->text("\n");
+
         $cProd = (string)$value->prod->cProd;               //codigo do produto
         $xProd = substr((string)$value->prod->xProd,0,14);   //descricao
         $qCom = (float)$value->prod->qCom;                  //quantidade
-        $vUnCom = (float)$value->prod->vUnCom;                //valor unitario
-        $vProd = (float)$value->prod->vProd;   
+        $vUnCom = number_format((float)$value->prod->vUnCom, 2);                //valor unitario
+        $vProd = $value->prod->vProd;   
         
         if(strlen($cProd)>=10){
             $aux = substr($cProd,0,7);
@@ -100,44 +101,38 @@ function parteIII($nfce,$printer){
             $cProd = substr($cProd,7);
         }
        
-        $cProd = str_pad($cProd, 11,' ');
+        $cProd = str_pad($cProd, 14,' ');
        
-        $xProd = str_pad($xProd, 21,' ');
-        $qCom = str_pad($qCom, 7,' ',STR_PAD_BOTH);
-        $vUnCom = str_pad($vUnCom, 9,' ',STR_PAD_BOTH);
-        $vProd = str_pad($vProd, 9,' ',STR_PAD_BOTH);
+        $xProd = str_pad($xProd, 17,' ');
+        $qCom = str_pad($qCom, 5,' ',STR_PAD_LEFT);
+        $vUnCom = str_pad($vUnCom, 11,' ',STR_PAD_LEFT);
+        $vProd = str_pad($vProd, 9,' ',STR_PAD_LEFT);
         $linha = $cProd. $xProd . $qCom . $vUnCom . $vProd;
         $printer->text($cProd. $xProd . $qCom . $vUnCom . $vProd);
     }
     $printer -> setFont(); // Reset
 }
-//relação dos tributos emcima dos produtos
-function parteIV($nfce,$printer){
-    $vTotTrib = (float) $nfce->infNFe->total->ICMSTot->vTotTrib;
-    $printer->text("\n");
-    $printer -> setEmphasis(true);
-    $printer->text('Informação dos Tributos Totais:' . '' . 'R$ ' .  $vTotTrib);
-    $printer -> setEmphasis(false);
-    $printer->text("\nIncidentes (Lei Federal 12.741 /2012) \n Fonte IBPT");
-}
 //forma utilizada para acerto da nota fiscal
 function parteV($nfce,$printer){
-    
+    $printer ->setJustification(Printer::JUSTIFY_LEFT);
     $vNF = (float) $nfce->infNFe->total->ICMSTot->vNF;
     $printer->text("\n");
     $printer -> setFont(Printer::FONT_B);
     $printer->text('VALOR TOTAL R$ ' . $vNF);
     $printer->text("\n");
-    $printer ->setJustification(Printer::JUSTIFY_LEFT);
-    $printer->text('FORMA PAGAMENTO            VALOR PAGO');
-    $printer -> setFont();
+    
+    $printer -> setEmphasis(true);
+    $printer->text(divisoria("FORMA DE PAGAMENTO"));
+    $printer -> setEmphasis(false);
+    
     $pag = $nfce->infNFe->pag->detPag;
     foreach ($pag as $key) {
         //echo tipoPag((string)$key->tPag);
         $forma_pagamento = tipoPag((string)$key->tPag);
         $printer ->setJustification(Printer::JUSTIFY_CENTER);
-        $printer->text("\n" . str_pad($forma_pagamento,17,' ',STR_PAD_RIGHT) . "- > " . $key->vPag);
+        $printer->text("\n" . str_pad($forma_pagamento,17,' ',STR_PAD_LEFT) . " -  " . $key->vPag);
     }
+    $printer -> setFont();
     $printer ->setJustification();
 }
 //informações para consulta da nota fiscal no site da receita
@@ -224,6 +219,16 @@ function parteVIII($nfce,$printer){
     $printer->text($xLgr . '' . $nro . '' . $xCpl . '' . $xBairro . '' . $xMun . '' . $uf);
     //linha divisória ??
 }
+function parteIX($nfce,$printer){
+    //Informações adicionais
+    $infAdic = $nfce->infNFe->infAdic->infCpl;
+    
+    //retirar # e substitui por quebra de linha \n como instruido na nota
+    $infAdic = str_replace("#","\n",$nfce->infNFe->infAdic->infCpl);
+    $printer ->setJustification(Printer::JUSTIFY_LEFT);
+    $printer->text("\n".$infAdic);
+    
+}
 function divisoria($titulo){
     $titulo = str_pad($titulo, 42, '-', STR_PAD_BOTH);
     return $titulo;
@@ -287,14 +292,13 @@ try {
                 echo "\n PART 1 ! \n";
                 parteIII($nfce,$printer);
                 echo "\n PART 2 ! \n";
-                parteIV($nfce,$printer);
-                echo "\n PART 3 ! \n";
+
                 parteV($nfce,$printer);
                 echo "\n PART 4 ! \n";
                 parteVII($nfce,$printer,$aURI);
                 echo "\n PART 5 ! \n";
                 parteVIII($nfce,$printer);
-
+                
                 //QRCODE
                 $qr = (string)$nfce->infNFeSupl->qrCode;
                 echo("\nQRCODE: \n".$qr);
@@ -306,6 +310,8 @@ try {
                     unlink($tmpfname);    
                 }
                 //QRCODE
+                echo "INFO ADICIONAL";
+                parteIX($nfce,$printer);
                 $printer ->setJustification(Printer::JUSTIFY_LEFT);
                 $printer->text("\n Emissão : " . date("d-m-Y H:i:s") );
                 $printer ->setJustification(Printer::JUSTIFY_CENTER);
