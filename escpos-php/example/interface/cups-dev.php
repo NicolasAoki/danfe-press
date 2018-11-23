@@ -19,14 +19,9 @@ function parteI($nfce,$aURI){
     if (array_key_exists($uf,$aURI)) {
         $uri =$aURI[$uf];
     }
-
-   echo ('CNPJ: '.$cnpj.' ');
-
-   echo($razao." \n");
-
+    echo ('CNPJ: '.$cnpj.' ');
+    echo($razao." \n");
     echo ($log . ', ' . $nro . ' ' . $bairro . ' ' . $mun . ' ' . $uf);
-    
-
     echo "\nDocumento Auxiliar da Nota Fiscal de Consumidor Eletônica \n";
 
 }
@@ -35,6 +30,7 @@ function parteIII($nfce,$printer){
     echo("\nItem Cod     |Descrição        |  Qtd|  V.Unit | V.Total");
 
     $det = $nfce->infNFe->det;
+    $qtdItens = 0;
     foreach ($det as $key => $value) {
         echo ("\n");
         $cProd = (string)$value->prod->cProd;               //codigo do produto
@@ -58,10 +54,12 @@ function parteIII($nfce,$printer){
         $linha = $cProd. $xProd . $qCom . $vUnCom . $vProd;
         //$linha = substr($linha,0,42);
         echo $linha;
+        $qtdItens++;
         
     }
 
     echo "\n";
+    return $qtdItens;
 }
 function parteIV($nfce,$printer){
     $vTotTrib = (float) $nfce->infNFe->total->ICMSTot->vTotTrib;
@@ -69,23 +67,37 @@ function parteIV($nfce,$printer){
     echo('Informação dos Tributos Totais:' . '' . 'R$ ' .  $vTotTrib);
     echo("\nIncidentes (Lei Federal 12.741 /2012) \n Fonte IBPT");
 }
-function parteV($nfce,$printer){
+function parteV($nfce,$printer,$qtdItens){
+    $vNF = number_format((float)$nfce->infNFe->total->ICMSTot->vNF, 2);
     
-    $vNF = (float) $nfce->infNFe->total->ICMSTot->vNF;
-    echo("\n");
-    echo('VALOR TOTAL R$ ' . $vNF);
-    echo("\n");
-    echo('FORMA PAGAMENTO');
+    $qtdItens = str_pad($qtdItens, 26,' ',STR_PAD_LEFT);
+    $vDesc = number_format((float)$nfce->infNFe->total->ICMSTot->vDesc,2);
 
-    echo('VALOR PAGO');
+    
+    echo("QTD. TOTAL DE ITENS".$qtdItens."\n");
+    //$vDesc =1 ;
+    if($vDesc){
+        $vNF_formatado = str_pad($vNF, 31,' ',STR_PAD_LEFT);
+        $vDesc = str_pad($vDesc, 37,' ',STR_PAD_LEFT);
+        echo("DESCONTO" . $vDesc . "\n");
+        echo("VALOR TOTAL R$" . $vNF_formatado . "\n");
+        //echo("VALOR A PAGAR" . $vNF - $vDesc);
+        
+    }else{
+        echo("VALOR A PAGAR" . $vNF);
+    }
+
+    echo("\n");
+    echo(divisoria("FORMA DE PAGAMENTO"));
+    
     $pag = $nfce->infNFe->pag->detPag;
-    //$tot = $pag->count();
     foreach ($pag as $key) {
         //echo tipoPag((string)$key->tPag);
-    $forma_pagamento = tipoPag((string)$key->tPag);
-    echo("\n" . str_pad($forma_pagamento,17,' ',STR_PAD_LEFT) . "- > " . $key->vPag);
+        $forma_pagamento = tipoPag((string)$key->tPag);
+        $forma_pagamento= str_pad($forma_pagamento,17,' ',STR_PAD_RIGHT);
+        $tipoPagamento = str_pad($key->vPag,24,' ',STR_PAD_LEFT);
+        echo("\n" .$forma_pagamento . " -  " . $tipoPagamento);
     }
-   echo("\n------------------------------\n");
 }
 function parteVII($nfce,$printer,$aURI){
     echo("\n");
@@ -189,7 +201,10 @@ function loadNFCe($nfcexml){
     print_r($nfce->infNFeSupl->qrCode);
     return $nfce;
 }
-
+function divisoria($titulo){
+    $titulo = str_pad($titulo, 42, '-', STR_PAD_BOTH);
+    return $titulo;
+}
 try {
     $nfce = '';
     $protNFe = '';
@@ -215,8 +230,8 @@ try {
     ];
     $nfce = loadNFCe('retsai_consagra.xml');
     parteI($nfce,$aURI);
-    parteIII($nfce,$printer);
-    parteV($nfce,$printer);
+    $qtdItens = parteIII($nfce,$printer);
+    parteV($nfce,$printer,$qtdItens);
     parteVII($nfce,$printer,$aURI);
     parteVIII($nfce,$printer);
     parteIX($nfce,$printer);

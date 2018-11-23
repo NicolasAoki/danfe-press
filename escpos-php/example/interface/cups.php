@@ -79,6 +79,7 @@ function parteI($nfce,$printer,$aURI){
 }
 //especificacoes dos itens da nota fiscal
 function parteIII($nfce,$printer){
+    $qtdItens = 0;
     $printer -> setEmphasis(true);
     $printer->text("\n");
     $printer -> setFont(Printer::FONT_B);
@@ -109,16 +110,32 @@ function parteIII($nfce,$printer){
         $vProd = str_pad($vProd, 9,' ',STR_PAD_LEFT);
         $linha = $cProd. $xProd . $qCom . $vUnCom . $vProd;
         $printer->text($cProd. $xProd . $qCom . $vUnCom . $vProd);
+        $qtdItens++;
     }
     $printer -> setFont(); // Reset
+    return $qtdItens;
 }
 //forma utilizada para acerto da nota fiscal
-function parteV($nfce,$printer){
+function parteV($nfce,$printer,$qtdItens){
     $printer ->setJustification(Printer::JUSTIFY_LEFT);
-    $vNF = (float) $nfce->infNFe->total->ICMSTot->vNF;
-    $printer->text("\n");
+    $vNF = number_format((float)$nfce->infNFe->total->ICMSTot->vNF, 2);
+    $vNF = str_pad($vNF, 31,' ',STR_PAD_LEFT);
+    $qtdItens = str_pad($qtdItens, 26,' ',STR_PAD_LEFT);
+    $vDesc = number_format((float)$nfce->infNFe->total->ICMSTot->vDesc,2);
+
     $printer -> setFont(Printer::FONT_B);
-    $printer->text('VALOR TOTAL R$ ' . $vNF);
+    $printer->text("\nQTD. TOTAL DE ITENS".$qtdItens."\n");
+    
+    if($vDesc){
+        $vNF_formatado = str_pad($vNF, 31,' ',STR_PAD_LEFT);
+        $vDesc = str_pad($vDesc, 28,' ',STR_PAD_RIGHT);
+        $printer->text("DESCONTO" . $vDesc . "\n");
+        $printer->text("VALOR TOTAL R$" . $vNF_formatado . "\n");
+        //$printer->text("VALOR A PAGAR" . $vNF - $vDesc);
+        
+    }else{
+        $printer->text("VALOR A PAGAR" . $vNF);
+    }
     $printer->text("\n");
     
     $printer -> setEmphasis(true);
@@ -129,11 +146,12 @@ function parteV($nfce,$printer){
     foreach ($pag as $key) {
         //echo tipoPag((string)$key->tPag);
         $forma_pagamento = tipoPag((string)$key->tPag);
-        $printer ->setJustification(Printer::JUSTIFY_CENTER);
-        $printer->text("\n" . str_pad($forma_pagamento,17,' ',STR_PAD_LEFT) . " -  " . $key->vPag);
+        $forma_pagamento= str_pad($forma_pagamento,17,' ',STR_PAD_RIGHT);
+        $tipoPagamento = str_pad($key->vPag,24,' ',STR_PAD_LEFT);
+        $printer->text("\n" .$forma_pagamento . " -  " . $tipoPagamento);
     }
-    $printer -> setFont();
-    $printer ->setJustification();
+    $printer->setFont();
+    $printer->setJustification();
 }
 //informações para consulta da nota fiscal no site da receita
 function parteVII($nfce,$printer,$aURI){
@@ -290,10 +308,8 @@ try {
                 $nfce = loadNFCe("../pasta_teste/".$events[0]['name']); 
                 parteI($nfce,$printer,$aURI);
                 echo "\n PART 1 ! \n";
-                parteIII($nfce,$printer);
-                echo "\n PART 2 ! \n";
-
-                parteV($nfce,$printer);
+                $qtdItens = parteIII($nfce,$printer);
+                parteV($nfce,$printer,$qtdItens);
                 echo "\n PART 4 ! \n";
                 parteVII($nfce,$printer,$aURI);
                 echo "\n PART 5 ! \n";
@@ -306,7 +322,7 @@ try {
                     $tmpfname = tempnam(sys_get_temp_dir(), "temp");
                     QRcode::png($qr, $tmpfname);
                     $img = EscposImage::load($tmpfname);;
-                    $printer->bitImage($img);
+                    $printer->bitImage($img,Printer::IMG_DOUBLE_WIDTH | Printer::IMG_DOUBLE_HEIGHT);
                     unlink($tmpfname);    
                 }
                 //QRCODE
