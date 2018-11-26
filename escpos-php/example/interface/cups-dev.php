@@ -72,10 +72,13 @@ function parteV($nfce,$printer,$qtdItens){
     
     $qtdItens = str_pad($qtdItens, 26,' ',STR_PAD_LEFT);
     $vDesc = number_format((float)$nfce->infNFe->total->ICMSTot->vDesc,2);
-
+    $vOutro = number_format((float)$nfce->infNFe->total->ICMSTot->vOutro,2);
     
     echo("QTD. TOTAL DE ITENS".$qtdItens."\n");
-    //$vDesc =1 ;
+    if($vOutro){
+        $vOutro = str_pad($vOutro, 10,' ',STR_PAD_LEFT);
+        echo("Acréscimos (frete, seguro e outros)" . $vOutro . "\n");
+    }
     if($vDesc){
         $vNF_formatado = str_pad($vNF, 31,' ',STR_PAD_LEFT);
         $vDesc = str_pad($vDesc, 37,' ',STR_PAD_LEFT);
@@ -83,7 +86,8 @@ function parteV($nfce,$printer,$qtdItens){
         echo("VALOR TOTAL R$" . $vNF_formatado . "\n");
         //echo("VALOR A PAGAR" . $vNF - $vDesc);
         
-    }else{
+    }
+    else{
         echo("VALOR A PAGAR" . $vNF);
     }
 
@@ -228,7 +232,7 @@ try {
         'SE' => 'http://www.nfce.se.gov.br/portal/portalNoticias.jsp?jsp=barra-menu/servicos/consultaDANFENFCe.htm',
         'SP' => 'https://www.nfce.fazenda.sp.gov.br/NFCeConsultaPublica/Paginas/ConsultaPublica.aspx'
     ];
-    $nfce = loadNFCe('retsai_consagra.xml');
+    $nfce = loadNFCe('retsai_802.xml');
     parteI($nfce,$aURI);
     $qtdItens = parteIII($nfce,$printer);
     parteV($nfce,$printer,$qtdItens);

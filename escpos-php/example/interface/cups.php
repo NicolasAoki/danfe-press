@@ -122,10 +122,16 @@ function parteV($nfce,$printer,$qtdItens){
     $vNF = str_pad($vNF, 31,' ',STR_PAD_LEFT);
     $qtdItens = str_pad($qtdItens, 26,' ',STR_PAD_LEFT);
     $vDesc = number_format((float)$nfce->infNFe->total->ICMSTot->vDesc,2);
+    $vOutro = number_format((float)$nfce->infNFe->total->ICMSTot->vOutro,2);
+    
 
     $printer -> setFont(Printer::FONT_B);
     $printer->text("\nQTD. TOTAL DE ITENS".$qtdItens."\n");
-    
+
+    if($vOutro){
+        $vOutro = str_pad($vOutro, 10,' ',STR_PAD_LEFT);
+        $printer->text("Acréscimos (frete, seguro e outros)" . $vOutro . "\n");
+    }
     if($vDesc){
         $vNF_formatado = str_pad($vNF, 31,' ',STR_PAD_LEFT);
         $vDesc = str_pad($vDesc, 28,' ',STR_PAD_RIGHT);
