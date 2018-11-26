@@ -72,12 +72,16 @@ function parteV($nfce,$printer,$qtdItens){
     
     $qtdItens = str_pad($qtdItens, 26,' ',STR_PAD_LEFT);
     $vDesc = number_format((float)$nfce->infNFe->total->ICMSTot->vDesc,2);
-    $vOutro = number_format((float)$nfce->infNFe->total->ICMSTot->vOutro,2);
+    $vOutro =number_format((float)$nfce->infNFe->total->ICMSTot->vOutro,2);
+    $vSeg =  number_format((float)$nfce->infNFe->total->ICMSTot->vSeg,2);
+    
+    $soma =  $vOutro + $vSeg;
+    $soma = number_format($soma,2);
     
     echo("QTD. TOTAL DE ITENS".$qtdItens."\n");
-    if($vOutro){
-        $vOutro = str_pad($vOutro, 10,' ',STR_PAD_LEFT);
-        echo("Acréscimos (frete, seguro e outros)" . $vOutro . "\n");
+    if($soma){
+        $soma = str_pad($soma, 10,' ',STR_PAD_LEFT);
+        echo("Acréscimos (frete, seguro e outros)" . $soma . "\n");
     }
     if($vDesc){
         $vNF_formatado = str_pad($vNF, 31,' ',STR_PAD_LEFT);
