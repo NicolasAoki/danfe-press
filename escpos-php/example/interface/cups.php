@@ -124,16 +124,16 @@ function parteV($nfce,$printer,$qtdItens){
     $vDesc = number_format((float)$nfce->infNFe->total->ICMSTot->vDesc,2);
     $vOutro =number_format((float)$nfce->infNFe->total->ICMSTot->vOutro,2);
     $vSeg =  number_format((float)$nfce->infNFe->total->ICMSTot->vSeg,2);
-    
+    $printer->text("\n");
     $soma =  $vOutro + $vSeg;
     $soma = number_format($soma,2);
     $printer -> setFont(Printer::FONT_B);
     $printer->text("\nQTD. TOTAL DE ITENS".$qtdItens."\n");
     if($soma){
         $soma = str_pad($soma, 20,' ',STR_PAD_LEFT);
-        $printer->text("Outros" . $soma . "\n");
+        $printer->text("ACRÉSCIMOS(SEGURO E OUTROS)" . $soma . "\n");
     }
-    if($vDesc){
+    if($vDesc != 0){
         $vNF_formatado = str_pad($vNF, 31,' ',STR_PAD_LEFT);
         $vDesc = str_pad($vDesc, 37,' ',STR_PAD_LEFT);
         $printer->text("DESCONTO" . $vDesc . "\n");
