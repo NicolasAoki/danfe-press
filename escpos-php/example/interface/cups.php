@@ -130,8 +130,8 @@ function parteV($nfce,$printer,$qtdItens){
     $printer -> setFont(Printer::FONT_B);
     $printer->text("\nQTD. TOTAL DE ITENS".$qtdItens."\n");
     if($soma){
-        $soma = str_pad($soma, 10,' ',STR_PAD_LEFT);
-        $printer->text("Acréscimos (frete, seguro e outros)" . $soma . "\n");
+        $soma = str_pad($soma, 20,' ',STR_PAD_LEFT);
+        $printer->text("Outros" . $soma . "\n");
     }
     if($vDesc){
         $vNF_formatado = str_pad($vNF, 31,' ',STR_PAD_LEFT);

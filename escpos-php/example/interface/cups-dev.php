@@ -77,13 +77,13 @@ function parteV($nfce,$printer,$qtdItens){
     
     $soma =  $vOutro + $vSeg;
     $soma = number_format($soma,2);
-    
+    echo("\n");
     echo("QTD. TOTAL DE ITENS".$qtdItens."\n");
     if($soma){
-        $soma = str_pad($soma, 10,' ',STR_PAD_LEFT);
-        echo("Acréscimos (frete, seguro e outros)" . $soma . "\n");
+        $soma = str_pad($soma, 17,' ',STR_PAD_LEFT);
+        echo("ACRÉSCIMOS(SEGURO E OUTROS)" . $soma . "\n");
     }
-    if($vDesc){
+    if($vDesc != 0 ){
         $vNF_formatado = str_pad($vNF, 31,' ',STR_PAD_LEFT);
         $vDesc = str_pad($vDesc, 37,' ',STR_PAD_LEFT);
         echo("DESCONTO" . $vDesc . "\n");
@@ -236,7 +236,7 @@ try {
         'SE' => 'http://www.nfce.se.gov.br/portal/portalNoticias.jsp?jsp=barra-menu/servicos/consultaDANFENFCe.htm',
         'SP' => 'https://www.nfce.fazenda.sp.gov.br/NFCeConsultaPublica/Paginas/ConsultaPublica.aspx'
     ];
-    $nfce = loadNFCe('retsai_802.xml');
+    $nfce = loadNFCe('retsai_798.xml');
     parteI($nfce,$aURI);
     $qtdItens = parteIII($nfce,$printer);
     parteV($nfce,$printer,$qtdItens);
