@@ -79,21 +79,19 @@ function parteV($nfce,$printer,$qtdItens){
     $soma = number_format($soma,2);
     echo("\n");
     echo("QTD. TOTAL DE ITENS".$qtdItens."\n");
+    $vNF_formatado = str_pad($vNF, 31,' ',STR_PAD_LEFT);
+    echo("VALOR TOTAL R$" . $vNF_formatado . "\n");
+    if($vDesc != 0 ){
+        $vDesc = str_pad($vDesc, 37,' ',STR_PAD_LEFT);
+        echo("DESCONTO" . $vDesc . "\n");
+        //echo("VALOR A PAGAR" . $vNF - $vDesc);    
+    }
     if($soma){
         $soma = str_pad($soma, 17,' ',STR_PAD_LEFT);
         echo("ACRÉSCIMOS(SEGURO E OUTROS)" . $soma . "\n");
     }
-    if($vDesc != 0 ){
-        $vNF_formatado = str_pad($vNF, 31,' ',STR_PAD_LEFT);
-        $vDesc = str_pad($vDesc, 37,' ',STR_PAD_LEFT);
-        echo("DESCONTO" . $vDesc . "\n");
-        echo("VALOR TOTAL R$" . $vNF_formatado . "\n");
-        //echo("VALOR A PAGAR" . $vNF - $vDesc);
-        
-    }
-    else{
-        echo("VALOR A PAGAR" . $vNF);
-    }
+    echo("VALOR A PAGAR" . $vNF);
+    
 
     echo("\n");
     echo(divisoria("FORMA DE PAGAMENTO"));

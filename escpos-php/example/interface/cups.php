@@ -128,22 +128,22 @@ function parteV($nfce,$printer,$qtdItens){
     $soma =  $vOutro + $vSeg;
     $soma = number_format($soma,2);
     $printer -> setFont(Printer::FONT_B);
+    $printer ->setJustification();
     $printer->text("\nQTD. TOTAL DE ITENS".$qtdItens."\n");
+    $vNF_formatado = str_pad($vNF, 31,' ',STR_PAD_LEFT);
+    $printer->text("VALOR TOTAL R$" . $vNF_formatado . "\n");
     if($soma){
         $soma = str_pad($soma, 20,' ',STR_PAD_LEFT);
         $printer->text("ACRÉSCIMOS(SEGURO E OUTROS)" . $soma . "\n");
     }
     if($vDesc != 0){
-        $vNF_formatado = str_pad($vNF, 31,' ',STR_PAD_LEFT);
         $vDesc = str_pad($vDesc, 37,' ',STR_PAD_LEFT);
         $printer->text("DESCONTO" . $vDesc . "\n");
-        $printer->text("VALOR TOTAL R$" . $vNF_formatado . "\n");
         //$printer->text("VALOR A PAGAR" . $vNF - $vDesc);
         
     }
-    else{
-        $printer->text("VALOR A PAGAR" . $vNF);
-    }
+    $printer->text("VALOR A PAGAR" . $vNF);
+    
 
     $printer->text("\n");
     
