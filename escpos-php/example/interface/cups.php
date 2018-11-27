@@ -83,7 +83,7 @@ function parteIII($nfce,$printer){
     $printer -> setEmphasis(true);
     $printer->text("\n");
     $printer -> setFont(Printer::FONT_B);
-    $printer->text("\nItem Cod    | Descrição       | Qtd |   V.Unit | V.Total");
+    $printer->text("\nItem Cod    | Descrição       |  Qtd|    V.Unit| V.Total");
     $printer -> setEmphasis(false);
     //obter dados dos itens da NFCe
      $det = $nfce->infNFe->det;
@@ -125,26 +125,26 @@ function parteV($nfce,$printer,$qtdItens){
     $vOutro =number_format((float)$nfce->infNFe->total->ICMSTot->vOutro,2);
     $vSeg =  number_format((float)$nfce->infNFe->total->ICMSTot->vSeg,2);
     $vProd =  number_format((float)$nfce->infNFe->total->ICMSTot->vProd,2);
-    $vProd = str_pad($vProd,40,' ', STR_PAD_LEFT);
+    $vProd = str_pad($vProd,45,' ', STR_PAD_LEFT);
     $printer->text("\n");
     $soma =  $vOutro + $vSeg;
     $soma = number_format($soma,2);
     $printer -> setFont(Printer::FONT_B);
     $printer ->setJustification();
     $printer->text("\nQTD. TOTAL DE ITENS".$qtdItens."\n");
-    $printer->text("VALOR A PAGAR" . $vProd."\n");
+    $printer->text("VALOR TOTAL" . $vProd."\n");
     if($soma){
-        $soma = str_pad($soma, 27,' ',STR_PAD_LEFT);
-        $printer->text("ACRÉSCIMOS(SEGURO E OUTROS)" . $soma . "\n");
+        $soma = str_pad($soma, 29,' ',STR_PAD_LEFT);
+        $printer->text("ACRÉSCIMOS(Seguro e outros)" . $soma . "\n");
     }
     if($vDesc != 0){
-        $vDesc = str_pad($vDesc, 37,' ',STR_PAD_LEFT);
+        $vDesc = str_pad($vDesc, 48,' ',STR_PAD_LEFT);
         $printer->text("DESCONTO" . $vDesc . "\n");
         //$printer->text("VALOR A PAGAR" . $vNF - $vDesc);
         
     }
-    $vNF_formatado = str_pad($vNF, 41,' ',STR_PAD_LEFT);
-    $printer->text("VALOR TOTAL R$" . $vNF_formatado . "\n");
+    $vNF_formatado = str_pad($vNF, 40,' ',STR_PAD_LEFT);
+    $printer->text("VALOR A PAGAR R$" . $vNF_formatado . "\n");
     
 
     $printer->text("\n");
