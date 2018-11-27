@@ -83,7 +83,7 @@ function parteIII($nfce,$printer){
     $printer -> setEmphasis(true);
     $printer->text("\n");
     $printer -> setFont(Printer::FONT_B);
-    $printer->text("\nItem Cod     |Descrição       |  Qtd|  V.Unit | V.Total");
+    $printer->text("\nItem Cod    | Descrição       | Qtd |   V.Unit | V.Total");
     $printer -> setEmphasis(false);
     //obter dados dos itens da NFCe
      $det = $nfce->infNFe->det;
@@ -120,20 +120,21 @@ function parteV($nfce,$printer,$qtdItens){
     $printer ->setJustification(Printer::JUSTIFY_LEFT);
     $vNF = number_format((float)$nfce->infNFe->total->ICMSTot->vNF, 2);
     
-    $qtdItens = str_pad($qtdItens, 26,' ',STR_PAD_LEFT);
+    $qtdItens = str_pad($qtdItens, 37,' ',STR_PAD_LEFT);
     $vDesc = number_format((float)$nfce->infNFe->total->ICMSTot->vDesc,2);
     $vOutro =number_format((float)$nfce->infNFe->total->ICMSTot->vOutro,2);
     $vSeg =  number_format((float)$nfce->infNFe->total->ICMSTot->vSeg,2);
+    $vProd =  number_format((float)$nfce->infNFe->total->ICMSTot->vProd,2);
+    $vProd = str_pad($vProd,40,' ', STR_PAD_LEFT);
     $printer->text("\n");
     $soma =  $vOutro + $vSeg;
     $soma = number_format($soma,2);
     $printer -> setFont(Printer::FONT_B);
     $printer ->setJustification();
     $printer->text("\nQTD. TOTAL DE ITENS".$qtdItens."\n");
-    $vNF_formatado = str_pad($vNF, 31,' ',STR_PAD_LEFT);
-    $printer->text("VALOR TOTAL R$" . $vNF_formatado . "\n");
+    $printer->text("VALOR A PAGAR" . $vProd."\n");
     if($soma){
-        $soma = str_pad($soma, 20,' ',STR_PAD_LEFT);
+        $soma = str_pad($soma, 27,' ',STR_PAD_LEFT);
         $printer->text("ACRÉSCIMOS(SEGURO E OUTROS)" . $soma . "\n");
     }
     if($vDesc != 0){
@@ -142,11 +143,12 @@ function parteV($nfce,$printer,$qtdItens){
         //$printer->text("VALOR A PAGAR" . $vNF - $vDesc);
         
     }
-    $printer->text("VALOR A PAGAR" . $vNF);
+    $vNF_formatado = str_pad($vNF, 41,' ',STR_PAD_LEFT);
+    $printer->text("VALOR TOTAL R$" . $vNF_formatado . "\n");
     
 
     $printer->text("\n");
-    
+    $printer ->setJustification(Printer::JUSTIFY_CENTER);
     $printer -> setEmphasis(true);
     $printer->text(divisoria("FORMA DE PAGAMENTO"));
     $printer -> setEmphasis(false);

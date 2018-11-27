@@ -27,7 +27,7 @@ function parteI($nfce,$aURI){
 }
 function parteIII($nfce,$printer){
 
-    echo("\nItem Cod     |Descrição        |  Qtd|  V.Unit | V.Total");
+    echo("\nItem Cod    | Descrição        |  Qtd|  V.Unit | V.Total");
 
     $det = $nfce->infNFe->det;
     $qtdItens = 0;
@@ -77,8 +77,11 @@ function parteV($nfce,$printer,$qtdItens){
     
     $soma =  $vOutro + $vSeg;
     $soma = number_format($soma,2);
+    $vProd =  number_format((float)$nfce->infNFe->total->ICMSTot->vProd,2);
+    $vProd = str_pad($vProd,32,' ', STR_PAD_LEFT);
+    echo("\nQTD. TOTAL DE ITENS".$qtdItens."\n");
+    echo("VALOR A PAGAR" . $vProd);
     echo("\n");
-    echo("QTD. TOTAL DE ITENS".$qtdItens."\n");
     $vNF_formatado = str_pad($vNF, 31,' ',STR_PAD_LEFT);
     echo("VALOR TOTAL R$" . $vNF_formatado . "\n");
     if($vDesc != 0 ){
@@ -87,10 +90,10 @@ function parteV($nfce,$printer,$qtdItens){
         //echo("VALOR A PAGAR" . $vNF - $vDesc);    
     }
     if($soma){
-        $soma = str_pad($soma, 17,' ',STR_PAD_LEFT);
+        $soma = str_pad($soma, 18,' ',STR_PAD_LEFT);
         echo("ACRÉSCIMOS(SEGURO E OUTROS)" . $soma . "\n");
     }
-    echo("VALOR A PAGAR" . $vNF);
+    
     
 
     echo("\n");
@@ -234,7 +237,7 @@ try {
         'SE' => 'http://www.nfce.se.gov.br/portal/portalNoticias.jsp?jsp=barra-menu/servicos/consultaDANFENFCe.htm',
         'SP' => 'https://www.nfce.fazenda.sp.gov.br/NFCeConsultaPublica/Paginas/ConsultaPublica.aspx'
     ];
-    $nfce = loadNFCe('retsai_798.xml');
+    $nfce = loadNFCe('retsai_808.xml');
     parteI($nfce,$aURI);
     $qtdItens = parteIII($nfce,$printer);
     parteV($nfce,$printer,$qtdItens);
