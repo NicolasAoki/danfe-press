@@ -74,28 +74,26 @@ function parteV($nfce,$printer,$qtdItens){
     $vDesc = number_format((float)$nfce->infNFe->total->ICMSTot->vDesc,2);
     $vOutro =number_format((float)$nfce->infNFe->total->ICMSTot->vOutro,2);
     $vSeg =  number_format((float)$nfce->infNFe->total->ICMSTot->vSeg,2);
-    
+    $vProd =  number_format((float)$nfce->infNFe->total->ICMSTot->vProd,2);
+    $valor_total = $vProd;
+    $vProd = str_pad($vProd,45,' ', STR_PAD_LEFT);
+    echo("\n");
     $soma =  $vOutro + $vSeg;
     $soma = number_format($soma,2);
-    $vProd =  number_format((float)$nfce->infNFe->total->ICMSTot->vProd,2);
-    $vProd = str_pad($vProd,32,' ', STR_PAD_LEFT);
     echo("\nQTD. TOTAL DE ITENS".$qtdItens."\n");
-    echo("VALOR A PAGAR" . $vProd);
-    echo("\n");
-    $vNF_formatado = str_pad($vNF, 31,' ',STR_PAD_LEFT);
-    echo("VALOR TOTAL R$" . $vNF_formatado . "\n");
-    if($vDesc != 0 ){
-        $vDesc = str_pad($vDesc, 37,' ',STR_PAD_LEFT);
+    echo("VALOR TOTAL" . $vProd."\n");
+    if($soma != 0){
+        $soma = str_pad($soma, 29,' ',STR_PAD_LEFT);
+        echo("ACRÉSCIMOS(Seguro e outros)" . $soma . "\n");
+    }
+    if($vDesc != 0){
+        $vDesc = str_pad($vDesc, 48,' ',STR_PAD_LEFT);
         echo("DESCONTO" . $vDesc . "\n");
-        //echo("VALOR A PAGAR" . $vNF - $vDesc);    
     }
-    if($soma){
-        $soma = str_pad($soma, 18,' ',STR_PAD_LEFT);
-        echo("ACRÉSCIMOS(SEGURO E OUTROS)" . $soma . "\n");
+    if($vNF != $valor_total){
+        $vNF_formatado = str_pad($vNF, 40,' ',STR_PAD_LEFT);
+        echo("VALOR A PAGAR R$" . $vNF_formatado . "\n");
     }
-    
-    
-
     echo("\n");
     echo(divisoria("FORMA DE PAGAMENTO"));
     
@@ -237,7 +235,7 @@ try {
         'SE' => 'http://www.nfce.se.gov.br/portal/portalNoticias.jsp?jsp=barra-menu/servicos/consultaDANFENFCe.htm',
         'SP' => 'https://www.nfce.fazenda.sp.gov.br/NFCeConsultaPublica/Paginas/ConsultaPublica.aspx'
     ];
-    $nfce = loadNFCe('retsai_808.xml');
+    $nfce = loadNFCe('retsai_798.xml');
     parteI($nfce,$aURI);
     $qtdItens = parteIII($nfce,$printer);
     parteV($nfce,$printer,$qtdItens);

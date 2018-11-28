@@ -125,6 +125,7 @@ function parteV($nfce,$printer,$qtdItens){
     $vOutro =number_format((float)$nfce->infNFe->total->ICMSTot->vOutro,2);
     $vSeg =  number_format((float)$nfce->infNFe->total->ICMSTot->vSeg,2);
     $vProd =  number_format((float)$nfce->infNFe->total->ICMSTot->vProd,2);
+    $valor_total = $vProd;
     $vProd = str_pad($vProd,45,' ', STR_PAD_LEFT);
     $printer->text("\n");
     $soma =  $vOutro + $vSeg;
@@ -133,7 +134,7 @@ function parteV($nfce,$printer,$qtdItens){
     $printer ->setJustification();
     $printer->text("\nQTD. TOTAL DE ITENS".$qtdItens."\n");
     $printer->text("VALOR TOTAL" . $vProd."\n");
-    if($soma){
+    if($soma != 0){
         $soma = str_pad($soma, 29,' ',STR_PAD_LEFT);
         $printer->text("ACRÉSCIMOS(Seguro e outros)" . $soma . "\n");
     }
@@ -143,8 +144,10 @@ function parteV($nfce,$printer,$qtdItens){
         //$printer->text("VALOR A PAGAR" . $vNF - $vDesc);
         
     }
-    $vNF_formatado = str_pad($vNF, 40,' ',STR_PAD_LEFT);
-    $printer->text("VALOR A PAGAR R$" . $vNF_formatado . "\n");
+    if($vNF != $valor_total){
+        $vNF_formatado = str_pad($vNF, 40,' ',STR_PAD_LEFT);
+        $printer->text("VALOR A PAGAR R$" . $vNF_formatado . "\n");
+    }
     
 
     $printer->text("\n");
