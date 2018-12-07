@@ -12,7 +12,11 @@ Impressão térmica utilizando driver 'cups'.
 cd danfe-press/escpos-php
 composer install
 ```
+## Requisitos
 
+php7 (compilar codigo fonte)
+inotify (monitorar ações do diretorio)
+sudo apt-get install php-gd (Gerar Imagem do QR Code)
 
 ## Exemplo de uso
 Executar processo exibe-danfe
