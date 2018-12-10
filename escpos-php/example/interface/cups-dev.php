@@ -235,24 +235,30 @@ try {
         'SE' => 'http://www.nfce.se.gov.br/portal/portalNoticias.jsp?jsp=barra-menu/servicos/consultaDANFENFCe.htm',
         'SP' => 'https://www.nfce.fazenda.sp.gov.br/NFCeConsultaPublica/Paginas/ConsultaPublica.aspx'
     ];
-    $nfce = loadNFCe('retsai_798.xml');
-    parteI($nfce,$aURI);
-    $qtdItens = parteIII($nfce,$printer);
-    parteV($nfce,$printer,$qtdItens);
-    parteVII($nfce,$printer,$aURI);
-    parteVIII($nfce,$printer);
-    parteIX($nfce,$printer);
-    //QRCODE
-    $qr = (string)$nfce->infNFeSupl->qrCode;
-    if(!empty($qr)){
-        //$printer->text($qr);
-        $tmpfname = tempnam(sys_get_temp_dir(), "temp");
-        QRcode::png($qr, $tmpfname);
-        $img = EscposImage::load($tmpfname);;
-        //$printer->bitImage($img);
-        unlink($tmpfname);    
+    if($argv[1]){
+
+        $nfce = loadNFCe($argv[1].".xml");
+        parteI($nfce,$aURI);
+        $qtdItens = parteIII($nfce,$printer);
+        parteV($nfce,$printer,$qtdItens);
+        parteVII($nfce,$printer,$aURI);
+        parteVIII($nfce,$printer);
+        parteIX($nfce,$printer);
+        //QRCODE
+        $qr = (string)$nfce->infNFeSupl->qrCode;
+        if(!empty($qr)){
+            //$printer->text($qr);
+            $tmpfname = tempnam(sys_get_temp_dir(), "temp");
+            QRcode::png($qr, $tmpfname);
+            $img = EscposImage::load($tmpfname);
+            //$printer->bitImage($img);
+            unlink($tmpfname);    
+        }
+        //QRCODE
+    
+    }else{
+        echo "Nome incorreto do arquivo XML";
     }
-    //QRCODE
 } catch (Exception $e) {
     echo "Couldn't print to this printer: " . $e -> getMessage() . "\n";
 }

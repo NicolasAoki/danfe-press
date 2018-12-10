@@ -5,7 +5,7 @@ $inoInst = inotify_init();
 stream_set_blocking($inoInst, 0);
 
 // not the best way but sufficient for this example :-)
-$dirWatch = '/sircplus/dados/csag/nfce/f0100/ret';
+$dirWatch = '/sircplus/dados/csag/nfce/f0100/ret/';
 
 $watch_id = inotify_add_watch($inoInst, $dirWatch, IN_ALL_EVENTS);
 while (true)
