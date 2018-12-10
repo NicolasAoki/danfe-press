@@ -269,7 +269,7 @@ function divisoria($titulo){
 function loadNFCe($nfcexml){
     $xml = $nfcexml;
     if (is_file($nfcexml)) {
-        $xml = @file_get_contents($nfcexml);
+        $xml = file_get_contents($nfcexml);
     }
     if (empty($xml)) {
         throw new InvalidArgumentException('Não foi possivel ler o documento.');
@@ -294,7 +294,7 @@ try {
     $connector = new CupsPrintConnector("bema2");
     $printer = new Printer($connector);
     //FIM PARAMETROS
-    //$dirWatch = '../../../../../../../../../sircplus/dados/csag/nfce/f0100/ret';
+    //$dirWatch = '/sircplus/dados/csag/nfce/f0100/ret';
     $dirWatch = '../pasta_teste';
     $inoInst = inotify_init();
 
@@ -308,7 +308,7 @@ try {
         $events = inotify_read($inoInst);
     
         //mask '2' evento que verifica se o arquivo esta sendo copiado para pasta
-        if ($events[0]['mask'] === 2){
+        if ($events[0]['mask'] === IN_CREATE){
             $nome_nota = $events[0]['name'];
             if(substr($nome_nota,0,6) == 'retsai'){
                 //banner consagra
@@ -357,6 +357,6 @@ try {
 
     //close our inotify instance
     fclose($inoInst);
-} catch (Exception $e) {
+} catch (Throawble $e) {
     echo "Couldn't print to this printer: " . $e -> getMessage() . "\n";
 }
