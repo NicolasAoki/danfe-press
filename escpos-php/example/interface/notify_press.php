@@ -309,7 +309,7 @@ try {
             $printer = new Printer($connector);
             $printer -> initialize();
 
-            $path = "/sircplus/dados/csag/nfce/f0100/ret/";
+            $path = "/sircplus/dados/csag/nfce/f0100/ret";
             $nfce = loadNFCe($path."/".$argv[1]);
 
             parteI($nfce,$printer,$aURI);
