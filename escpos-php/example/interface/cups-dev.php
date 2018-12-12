@@ -236,7 +236,7 @@ try {
         'SP' => 'https://www.nfce.fazenda.sp.gov.br/NFCeConsultaPublica/Paginas/ConsultaPublica.aspx'
     ];
     if($argv[1]){
-
+        echo $argv[1] . " Sendo processado ! \n";
         $nfce = loadNFCe($argv[1].".xml");
         parteI($nfce,$aURI);
         $qtdItens = parteIII($nfce,$printer);
