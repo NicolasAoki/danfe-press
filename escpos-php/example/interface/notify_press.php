@@ -298,8 +298,8 @@ try {
     
     if($nome_arq){
         echo $nome_arq . " Sendo processado ! \n";
-        $nome_arq = substr($nome_arq,0,6);
-        if($nome_arq == 'retsai'){
+        //$nome_arq = substr($nome_arq,0,6);
+       // if($nome_arq == 'retsai'){
             //banner consagra
             $printer ->setJustification(Printer::JUSTIFY_CENTER);
             $img = EscposImage::load("/var/www/html/danfe-press/escpos-php/example/interface/banner.png");
@@ -345,10 +345,10 @@ try {
             $printer->cut();
             $printer->close();
         
-        }else{
+        /*/ }else{
             $printer->close();
             echo "\nParametro nao recebido ! (nome do arquivo)\n";
-        }
+        }*/
     }
     $printer->close();
 } catch (Throawble $e) {
