@@ -10,7 +10,7 @@ done
 
 #!/bin/sh
 MONITORDIR="/root"
-inotifywait -e create | echo "identificou ao criar"
+inotifywait -e close_write | echo "identificou ao criar"
 
 ---------------------
 inotifywait -m  --format '%:e %f' /sircplus/dados/csag/nfce/f0100/ret/ | while read FILE
@@ -23,7 +23,7 @@ c
 ---------------------
 
 
-inotifywait -m -e create --format '%f' /sircplus/dados/csag/nfce/f0100/ret/ | while read FILE
+inotifywait -m -e create -e moved_to --format '%f' /sircplus/dados/csag/nfce/f0100/ret/ | while read FILE
 do
   echo "$FILE"
   /usr/bin/php -q /sircplus/bin/danfe-press/escpos-php/example/interface/notify_press.php $FILE

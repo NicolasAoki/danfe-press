@@ -27,7 +27,7 @@ composer installsudo apt-get install php-gd
 - php7 (compilar codigo fonte)
 - inotify (monitorar ações do diretorio)
 - sudo apt-get install php-gd (Gerar Imagem do QR Code)
-
+ - [imagemagick](https://configurando.org/instalar-imagemagick-no-centos-7/) leitura de arquivo jpeg e png
 ## Exemplo de uso
 Executar processo exibe-danfe
 ```sh
