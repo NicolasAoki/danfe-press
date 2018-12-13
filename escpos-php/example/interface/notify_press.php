@@ -357,3 +357,4 @@ try {
     echo "Couldn't print to this printer: " . $e -> getMessage() . "\n";
     $printer->close();
 }
+?>
