@@ -335,6 +335,7 @@ try {
                 $printer->bitImage($img,Printer::IMG_DOUBLE_WIDTH | Printer::IMG_DOUBLE_HEIGHT);
                 unlink($tmpfname);    
             }
+            unset($img);
             //QRCODE
             echo "INFO ADICIONAL";
             parteIX($nfce,$printer);
