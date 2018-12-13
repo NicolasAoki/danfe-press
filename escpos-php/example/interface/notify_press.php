@@ -302,8 +302,8 @@ try {
         if($nome_arq == 'retsai'){
             //banner consagra
             $printer ->setJustification(Printer::JUSTIFY_CENTER);
-            //$img = EscposImage::load("/var/www/html/danfe-press/escpos-php/example/interface/banner.png");
-            //$printer->bitImage($img);
+            $img = EscposImage::load("/sircplus/bin/danfe-press/escpos-php/example/interface/banner.png");
+            $printer->bitImage($img);
             $printer ->setJustification();
             //banner
             $printer = new Printer($connector);
