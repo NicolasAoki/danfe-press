@@ -10,7 +10,7 @@ done
 
 #!/bin/sh
 MONITORDIR="/root"
-inotifywait -e create | echo "identificou ao criar"
+inotifywait -e close_write | echo "identificou ao criar"
 
 ---------------------
 inotifywait -m  --format '%:e %f' /sircplus/dados/csag/nfce/f0100/ret/ | while read FILE

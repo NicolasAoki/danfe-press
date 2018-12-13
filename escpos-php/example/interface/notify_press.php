@@ -343,10 +343,10 @@ try {
             $printer ->setJustification(Printer::JUSTIFY_CENTER);
  
             $printer->cut();
-            $printer->close();
+        
         
         }else{
-            $printer->close();
+         
             echo "\nParametro nao recebido ! (nome do arquivo)\n";
         }
     }
