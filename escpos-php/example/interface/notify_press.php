@@ -343,14 +343,16 @@ try {
             $printer ->setJustification(Printer::JUSTIFY_CENTER);
  
             $printer->cut();
-        
+            $printer->close();
         
         }else{
-         
             echo "\nParametro nao recebido ! (nome do arquivo)\n";
+            $printer->close();
+            
         }
     }
     $printer->close();
 } catch (Throawble $e) {
     echo "Couldn't print to this printer: " . $e -> getMessage() . "\n";
+    $printer->close();
 }
