@@ -14,10 +14,14 @@ sleep 4;
 
 
 echo " * Iniciando o processo - inotifywait "
-inotifywait -m -e create -e moved_to -d -o /sircplus/bin/danfe-press/escpos-php/example/interface/log.log --format '%f' /sircplus/dados/csag/nfce/f0100/ret/ | while read FILE
-do
-  echo "$FILE"
-  /usr/bin/php -q /sircplus/bin/danfe-press/escpos-php/example/interface/notify_press.php $FILE
+
+#PARTE 3 Com Daemon
+# exclude retira arquivos terminados em xml, aswp e diferentes de rets
+# verifica a criacao de um arquivo aplicados com regex (sobrando o aspw),
+# retira-se o nome manda por parametro para o programa php notify_press 
+
+inotifywait -m -e create -d -o log.log /sircplus/dados/csag/nfce/f0100/ret/ | 
+while read path action file; do sleep 3s 
+	echo "The file '$file' appeared in directory '$path' via '$action'" |
+	/usr/bin/php -q /sircplus/bin/danfe-press/escpos-php/example/interface/notify_press.php $file
 done
-
-
