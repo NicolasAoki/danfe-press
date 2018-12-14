@@ -38,6 +38,17 @@ while read path action file; do
 	/usr/bin/php -q /sircplus/bin/danfe-press/escpos-php/example/interface/notify_press.php $file
 done
 ---------------------
+#PARTE 2
+# exclude retira arquivos terminados em xml, aswp e diferentes de rets
+# verifica a criacao de um arquivo aplicados com regex (sobrando o aspw),
+# retira-se o nome manda por parametro para o programa php notify_press 
+
+inotifywait -m -e create /sircplus/dados/csag/nfce/f0100/ret/ | 
+while read path action file; do sleep 3s 
+	echo "The file '$file' appeared in directory '$path' via '$action'" |
+	/usr/bin/php -q /sircplus/bin/danfe-press/escpos-php/example/interface/notify_press.php $file
+done
+---------------------
 inotifywait -m /sircplus/dados/csag/nfce/f0100/ret/ -e close_write |
     while read path action file; do
         if [ "$file" =~ retsai* ] && ["$file" -ne *".swp" ]; then # Does the file end with .xml?
