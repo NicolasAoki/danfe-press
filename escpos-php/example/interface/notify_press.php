@@ -299,59 +299,52 @@ try {
 
     if($nome_arq){
         echo $nome_arq . " Sendo processado ! \n";
-        $nome_arq = substr($nome_arq,0,6);
-        if($nome_arq == 'retsai'){
-            //banner consagra
-            $printer ->setJustification(Printer::JUSTIFY_CENTER);
-            $img = EscposImage::load("/sircplus/bin/danfe-press/escpos-php/example/interface/banner.png");
-            $printer->bitImage($img);
-            $printer ->setJustification();
-            //banner
-            $printer = new Printer($connector);
-            $printer -> initialize();
+        //banner consagra
+        $printer ->setJustification(Printer::JUSTIFY_CENTER);
+        $img = EscposImage::load("/sircplus/bin/danfe-press/escpos-php/example/interface/banner.png");
+        $printer->bitImage($img);
+        $printer ->setJustification();
+        //banner
+        $printer = new Printer($connector);
+        $printer -> initialize();
 
-            $path = "/sircplus/dados/csag/nfce/f0100/ret";
-            $nfce = loadNFCe($path."/".$argv[1].".xml");
+        $path = "/sircplus/dados/csag/nfce/f0100/ret";
+        $nfce = loadNFCe($path."/".$argv[1].".xml");
 
-            parteI($nfce,$printer,$aURI);
-            echo "\n PART 1 ! \n";
-            $qtdItens = parteIII($nfce,$printer);
-            echo "\n PART 3 ! \n";
-            parteV($nfce,$printer,$qtdItens);
-            echo "\n PART 5 ! \n";
-            parteVII($nfce,$printer,$aURI);
-            echo "\n PART 7 ! \n";
-            parteVIII($nfce,$printer);
-            echo "\n PART 8 ! \n";
-            parteIX($nfce,$printer);
-            echo "\n PART 9 ! \n";
-            
-            //QRCODE
-            $qr = (string)$nfce->infNFeSupl->qrCode;
-            echo("\nQRCODE: \n".$qr);
-            if(!empty($qr)){
-                $tmpfname = tempnam(sys_get_temp_dir(), "temp");
-                QRcode::png($qr, $tmpfname);
-                $img = EscposImage::load($tmpfname);;
-                $printer->bitImage($img,Printer::IMG_DOUBLE_WIDTH | Printer::IMG_DOUBLE_HEIGHT);
-                unlink($tmpfname);    
-            }
-            unset($img);
-            //QRCODE
-            echo "INFO ADICIONAL";
-            parteIX($nfce,$printer);
-            $printer ->setJustification(Printer::JUSTIFY_LEFT);
-            $printer->text("\n Emissão : " . date("d-m-Y H:i:s") );
-            $printer ->setJustification(Printer::JUSTIFY_CENTER);
- 
-            $printer->cut();
-            $printer->close();
+        parteI($nfce,$printer,$aURI);
+        echo "\n PART 1 ! \n";
+        $qtdItens = parteIII($nfce,$printer);
+        echo "\n PART 3 ! \n";
+        parteV($nfce,$printer,$qtdItens);
+        echo "\n PART 5 ! \n";
+        parteVII($nfce,$printer,$aURI);
+        echo "\n PART 7 ! \n";
+        parteVIII($nfce,$printer);
+        echo "\n PART 8 ! \n";
+        parteIX($nfce,$printer);
+        echo "\n PART 9 ! \n";
         
-        }else{
-            echo "\nParametro nao recebido ! (nome do arquivo)\n";
-            $printer->close();
-            
+        //QRCODE
+        $qr = (string)$nfce->infNFeSupl->qrCode;
+        echo("\nQRCODE: \n".$qr);
+        if(!empty($qr)){
+            $tmpfname = tempnam(sys_get_temp_dir(), "temp");
+            QRcode::png($qr, $tmpfname);
+            $img = EscposImage::load($tmpfname);;
+            $printer->bitImage($img,Printer::IMG_DOUBLE_WIDTH | Printer::IMG_DOUBLE_HEIGHT);
+            unlink($tmpfname);    
         }
+        unset($img);
+        //QRCODE
+        echo "INFO ADICIONAL";
+        parteIX($nfce,$printer);
+        $printer ->setJustification(Printer::JUSTIFY_LEFT);
+        $printer->text("\n Emissão : " . date("d-m-Y H:i:s") );
+        $printer ->setJustification(Printer::JUSTIFY_CENTER);
+
+        $printer->cut();
+        $printer->close();
+     
     }
     $printer->close();
 } catch (Throawble $e) {

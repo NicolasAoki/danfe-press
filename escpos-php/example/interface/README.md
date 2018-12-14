@@ -1,8 +1,8 @@
-Interfaces
-----------
-This directory contains boilerpalte code to show you how to open a print connector
-to printers which are connected in different ways.
-
-To get a list of supported interfaces and operating systems, see the main README.md file for the project.
-
-If you have a printer interface with no example, and you want to help put one together, then please lodge a request on the bug tracker: https://github.com/mike42/escpos-php/issues
+# Executar script script/sircnfce
+## Processo de execução
+ ```
+ - inotifywait verifica a criação de um novo arquivo
+ - retira o nome do arquivo
+ - manda requisição para arquivo php com o nome
+ - monta arquivo XML em formato ESC-POS
+ - gera requisição para impressao térmica
