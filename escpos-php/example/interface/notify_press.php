@@ -311,7 +311,7 @@ try {
             $printer -> initialize();
 
             $path = "/sircplus/dados/csag/nfce/f0100/ret";
-            $nfce = loadNFCe($path."/".$argv[1]);
+            $nfce = loadNFCe($path."/".$argv[1].".xml");
 
             parteI($nfce,$printer,$aURI);
             echo "\n PART 1 ! \n";
