@@ -309,8 +309,13 @@ try {
         $printer -> initialize();
 
         $path = "/sircplus/dados/csag/nfce/f0100/ret";
-        $nfce = loadNFCe($path."/".$argv[1].".xml");
-
+    
+        try{
+            $nfce = loadNFCe($path."/".$argv[1].".xml");
+        }catch(Throwable $e){
+            echo "Erro ao processar xml";
+        }
+    
         parteI($nfce,$printer,$aURI);
         echo "\n PART 1 ! \n";
         $qtdItens = parteIII($nfce,$printer);
@@ -341,7 +346,7 @@ try {
         $printer ->setJustification(Printer::JUSTIFY_LEFT);
         $printer->text("\n Emissão : " . date("d-m-Y H:i:s") );
         $printer ->setJustification(Printer::JUSTIFY_CENTER);
-
+    
         $printer->cut();
         $printer->close();
      

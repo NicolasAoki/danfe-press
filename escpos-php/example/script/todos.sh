@@ -32,7 +32,7 @@ done
 # verifica a criacao de um arquivo aplicados com regex (sobrando o aspw),
 # retira-se o nome manda por parametro para o programa php notify_press 
 
-inotifywait -m  -e create --exclude '\.xml|\.aswp|(^[\rets*])' /sircplus/dados/csag/nfce/f0100/ret/ | 
+inotifywait -m  -e create --exclude '\.xml|\.aswp' /sircplus/dados/csag/nfce/f0100/ret/ | 
 while read path action file; do
 	echo "The file '$file' appeared in directory '$path' via '$action'" |
 	/usr/bin/php -q /sircplus/bin/danfe-press/escpos-php/example/interface/notify_press.php $file
