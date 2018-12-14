@@ -311,7 +311,8 @@ try {
         $path = "/sircplus/dados/csag/nfce/f0100/ret";
     
         try{
-            $nfce = loadNFCe($path."/".$argv[1].".xml");
+	   	echo "\n\n\n\n\n\n". $path ."/".$argv[1].".xml";
+ 	   $nfce = loadNFCe($path."/".$argv[1]);
         }catch(Throwable $e){
             echo "Erro ao processar xml";
         }
