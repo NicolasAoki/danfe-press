@@ -295,7 +295,7 @@ try {
     $printer = new Printer($connector);
     //FIM PARAMETROS
     $nome_arq = $argv[1]; 
-    echo $args[1]."\n";
+    echo $argv[1]."\n";
 
     if($nome_arq){
         echo $nome_arq . " Sendo processado ! \n";
